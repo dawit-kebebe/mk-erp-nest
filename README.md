@@ -1,4 +1,5 @@
-![ERP System Logo](./docs/images/MK-ERP.png)
+<p align="center"><img src="./docs/images/MK-ERP.png" width="120" alt="ERP System Logo" />
+</p>
 
 # **ERP Backend System**
 
