@@ -1,26 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthenticationDto } from '../dto/create-authentication.dto';
-import { UpdateAuthenticationDto } from '../dto/update-authentication.dto';
+import { User } from '@mk/database/entities/user.entity';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { LoginRequestDto } from '../dto/login-request.dto';
+import { LoginResponseDto } from '../dto/login-response.dto';
+import { RefreshAccessTokenRequestDto } from '../dto/refresh-access-token-request.dto';
+import { RefreshAccessTokenResponseDto } from '../dto/refresh-access-token-response.dto';
 
 @Injectable()
 export class AuthenticationService {
-  create(createAuthenticationDto: CreateAuthenticationDto) {
-    return 'This action adds a new authentication';
-  }
 
-  findAll() {
-    return `This action returns all authentication`;
-  }
+	constructor(@InjectRepository(User) private readonly userRepository: Repository<User>, @Inject() private readonly jwtService: JwtService) { }
 
-  findOne(id: number) {
-    return `This action returns a #${id} authentication`;
-  }
+	async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
+		const user = await this.userRepository.findOne({ where: { email } });
 
-  update(id: number, updateAuthenticationDto: UpdateAuthenticationDto) {
-    return `This action updates a #${id} authentication`;
-  }
+		if (user && (await bcrypt.compare(password, user.password))) {
+			// Exclude password in a type-safe way
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { password, ...userWithoutPassword } = user;
 
-  remove(id: number) {
-    return `This action removes a #${id} authentication`;
-  }
+			return userWithoutPassword as Omit<User, 'password'>;
+		}
+		return null;
+	}
+
+	refreshToken(refreshTokenRequestDto: RefreshAccessTokenRequestDto): RefreshAccessTokenResponseDto {
+		try {
+			const payload = this.jwtService.verify(refreshTokenRequestDto.refresh_token);
+
+			if (!payload || typeof payload !== 'object') {
+				throw new UnauthorizedException('Invalid refresh token payload');
+			}
+
+			// Optionally, check if the token is expired or blacklisted here
+			if (!('exp' in payload) || typeof payload.exp !== 'number' || payload.exp <= Date.now() / 1000) {
+				throw new UnauthorizedException('Refresh token has expired or is invalid');
+			}
+
+			const { username, sub, roleId, organizationalUnitId, tenantId } = payload;
+
+			if (!username || !sub || !roleId || !organizationalUnitId || !tenantId) {
+				throw new UnauthorizedException('Refresh token payload missing required properties');
+			}
+
+			const newAccessToken = this.jwtService.sign({ username, sub, roleId, organizationalUnitId, tenantId });
+			return { access_token: newAccessToken };
+
+		} catch (error) {
+			throw new UnauthorizedException('Invalid refresh token', error?.message);
+		}
+	}
+
+	async login(loginDto: LoginRequestDto,): Promise<LoginResponseDto> {
+		const user = await this.validateUser(loginDto.email, loginDto.password);
+		if (!user) {
+			throw new UnauthorizedException('Invalid credentials');
+		}
+
+		const payload = {
+			username: user.username,
+			sub: user.id,
+			roleId: user.roleId,
+			organizationalUnitId: user.organizationalUnitId,
+           	tenantId: user.tenantId,
+		};
+
+		return {
+			access_token: this.jwtService.sign(payload),
+			refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' })
+		};
+	}
+
+	logout() { }
 }

@@ -1,16 +1,17 @@
+import { Tenant } from '@mk/common/entities/tenant.entity';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from './role.entity';
 import { OrganizationalUnit } from './organizational-unit.entity';
-import { Audit } from '@mk/common/entities/audit.entity';
+import { Role } from './role.entity';
+import { Expose } from 'class-transformer';
 
 @Entity('users')
-export class User extends Audit {
+export class User extends Tenant {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

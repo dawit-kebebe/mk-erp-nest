@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsOptional, IsString, MaxLength, IsNotEmpty, IsUUID } from "class-validator";
+import { Expose } from "class-transformer";
 
 export class RespondOrganizationalUnitTypeDto {
     @ApiProperty({
@@ -10,6 +11,7 @@ export class RespondOrganizationalUnitTypeDto {
         format: "uuid",
     })
     @IsUUID()
+    @Expose()
     id: string;
 
     @ApiProperty({
@@ -23,6 +25,7 @@ export class RespondOrganizationalUnitTypeDto {
     @IsString()
     @IsNotEmpty()
     @MaxLength(100)
+    @Expose()
     tag: string;
 
     @ApiPropertyOptional({
@@ -32,5 +35,6 @@ export class RespondOrganizationalUnitTypeDto {
     })
     @IsOptional()
     @IsString()
+    @Expose()
     description?: string;
 }

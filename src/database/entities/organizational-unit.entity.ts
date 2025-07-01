@@ -8,9 +8,10 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 import { OrganizationalUnitType } from './organizational-unit-type.entity';
+import { Tenant } from '@mk/common/entities/tenant.entity';
 
 @Entity('organizational_units')
-export class OrganizationalUnit {
+export class OrganizationalUnit extends Tenant {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

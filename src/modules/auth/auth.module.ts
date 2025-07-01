@@ -17,13 +17,26 @@ import { PermissionAction } from '@mk/database/entities/permission.action.entity
 import { OrganizationalUnitTypeController } from './organizational-unit/controllers/organizational-unit-type.controller';
 import { OrganizationalUnitTypeService } from './organizational-unit/services/organizational-unit-type.service';
 import { GraphCycleDetectorService } from '@mk/common/utils/shared-graph-cycle-detector.service';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN') },
+      }),
+    }),
     TypeOrmModule.forFeature([
       User, OrganizationalUnit, Role, Permission, Feature, OrganizationalUnitType, PermissionFeature, PermissionAction
     ])
   ],
+  exports: [JwtModule, PassportModule],
   controllers: [UserController, AuthenticationController, OrganizationalUnitController, OrganizationalUnitTypeController],
   providers: [UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, GraphCycleDetectorService]
 })

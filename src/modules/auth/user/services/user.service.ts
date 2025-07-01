@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { TEntityCrudService } from '@mk/common/utils/shared-crud.service';
+import { User } from '@mk/database/entities/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
-export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+export class UserService extends TEntityCrudService<User> {
+	constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {
+		super(userRepository)
+	}
 
-  findAll() {
-    return `This action returns all user`;
-  }
+	async create(itemData: CreateUserDto): Promise<InsertResult> {
+		const { password, ...rest } = itemData;
+		const salt = await bcrypt.genSalt();
+		const hashedPassword = await bcrypt.hash(password, salt);
+		const user = this.userRepository.create({
+			...rest,
+			password: hashedPassword,
+		});
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+		return this.userRepository.save(user) as unknown as InsertResult;
+	}
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+	async update(id: string, itemData: UpdateUserDto): Promise<UpdateResult> {
+		const user = await this.findOne(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+		if (!user) {
+			throw new NotFoundException("User not found.");
+		}
+
+		if (itemData.password) {
+			const salt = await bcrypt.genSalt();
+			user.password = await bcrypt.hash(itemData.password, salt);
+		}
+
+		Object.assign(user, itemData);
+
+		return this.userRepository.save(user) as unknown as UpdateResult;
+	}
 }

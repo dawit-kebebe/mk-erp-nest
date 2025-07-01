@@ -31,6 +31,9 @@ export const configModuleOptions: ConfigModuleOptions<Record<string, any>> = {
             zod.number().positive('JWT_EXPIRES_IN must be a positive number').default(3600)
         ),
 
+        // Root Tenant Configuration
+        ROOT_TENANT: zod.string().uuid("ROOT_TENANT is required and must be a valid UUID.").default('f1c59dda-1957-42f3-b80a-0848dbc2050f'),
+
         // Application Port
         PORT: zod.preprocess(
             (val) => parseInt(zod.string().parse(val), 10),

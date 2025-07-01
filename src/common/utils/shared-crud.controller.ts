@@ -19,7 +19,7 @@ export function TEntityCrudController<T extends ObjectLiteral>(
     @UseInterceptors(/* your interceptors if any */)
     @ApiBearerAuth()
     class SchemaCrudControllerHost {
-        constructor(public readonly schemaCrudService: TEntityCrudService<T>) {}
+        constructor(public readonly schemaCrudService: TEntityCrudService<T>) { }
 
         @Get()
         @ApiOperation({
@@ -33,7 +33,7 @@ export function TEntityCrudController<T extends ObjectLiteral>(
         })
         async findAll() {
             const data = await this.schemaCrudService.findAll()
-            return plainToInstance(options.responseDto, data)
+            return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 
         @Get('/:id')
@@ -53,7 +53,7 @@ export function TEntityCrudController<T extends ObjectLiteral>(
             @Param('id') id: string
         ) {
             const data = await this.schemaCrudService.findOne(id)
-            return plainToInstance(options.responseDto, data)
+            return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 
         @Post()
@@ -74,7 +74,7 @@ export function TEntityCrudController<T extends ObjectLiteral>(
             @Body() itemData: any
         ) {
             const data = await this.schemaCrudService.create(itemData)
-            return plainToInstance(options.responseDto, data)
+            return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 
         @Put('/:id')
@@ -100,7 +100,7 @@ export function TEntityCrudController<T extends ObjectLiteral>(
             @Body() itemData: any
         ) {
             const data = await this.schemaCrudService.update(id, itemData)
-            return plainToInstance(options.responseDto, data)
+            return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 
         @Delete('/:id')

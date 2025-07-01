@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
-import {config} from "dotenv";
+import { config } from "dotenv";
+import { runSeeders } from "typeorm-extension";
 config();
 
 export enum DbmsType {
@@ -35,6 +36,8 @@ const baseConfig = {
   database: DB_DATABASE,
   entities: ["dist/database/entities/*.entity.js"],
   migrations: ["dist/database/migrations/*.js"],
+  seeds: ['dist/database/seeders/*.seeder.js'],
+  factories: ['dist/database/seeders/*.factory.js'],
   synchronize: DB_SYNCHRONIZE === 'true',
   logging: true,
 };
@@ -42,16 +45,16 @@ const baseConfig = {
 export const dataSourceOptions = (
   dbms === DbmsType.AURORA_MYSQL
     ? {
-        type: DbmsType.AURORA_MYSQL,
-        ...baseConfig,
-        region: DB_REGION!,
-        secretArn: DB_SECRET_ARN!,
-        resourceArn: DB_RESOURCE_ARN!,
-      }
+      type: DbmsType.AURORA_MYSQL,
+      ...baseConfig,
+      region: DB_REGION!,
+      secretArn: DB_SECRET_ARN!,
+      resourceArn: DB_RESOURCE_ARN!,
+    }
     : {
-        type: dbms,
-        ...baseConfig,
-      }
+      type: dbms,
+      ...baseConfig,
+    }
 ) satisfies DataSourceOptions;
 
 
