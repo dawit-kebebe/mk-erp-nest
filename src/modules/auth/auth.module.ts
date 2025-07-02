@@ -20,6 +20,7 @@ import { GraphCycleDetectorService } from '@mk/common/utils/shared-graph-cycle-d
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TenantContext } from '@mk/common/utils/tenant.context';
 
 @Module({
   imports: [
@@ -38,6 +39,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
   exports: [JwtModule, PassportModule],
   controllers: [UserController, AuthenticationController, OrganizationalUnitController, OrganizationalUnitTypeController],
-  providers: [UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, GraphCycleDetectorService]
+  providers: [UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, GraphCycleDetectorService, TenantContext]
 })
 export class AuthModule { }

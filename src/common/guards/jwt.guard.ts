@@ -2,11 +2,9 @@ import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/com
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth } from "@nestjs/swagger";
 import { Observable } from "rxjs";
 
 @Injectable()
-@ApiBearerAuth()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService) {
     super();

@@ -32,7 +32,16 @@ export const configModuleOptions: ConfigModuleOptions<Record<string, any>> = {
         ),
 
         // Root Tenant Configuration
-        ROOT_TENANT: zod.string().uuid("ROOT_TENANT is required and must be a valid UUID.").default('f1c59dda-1957-42f3-b80a-0848dbc2050f'),
+        ROOT_TENANT: zod.string()
+            .uuid("ROOT_TENANT is required and must be a valid UUID.")
+            .default('f1c59dda-1957-42f3-b80a-0848dbc2050f'),
+
+        //Super Admin Configuration
+        SUPER_ADMIN_EMAIL: zod.string()
+            .email("SUPER_ADMIN_EMAIL is required and must be a valid email address."),
+        SUPER_ADMIN_PASSWORD: zod.string()
+            .min(6, 'SUPER_ADMIN_PASSWORD is required and must be at least 6 characters.')
+            .regex(/^[a-zA-Z0-9]+$/, 'SUPER_ADMIN_PASSWORD must be alphanumeric.'),
 
         // Application Port
         PORT: zod.preprocess(

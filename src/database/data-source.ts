@@ -1,7 +1,5 @@
+import { TenantAwareSubscriber } from "@mk/common/typeorm/tenant.subscriber";
 import { DataSource, DataSourceOptions } from "typeorm";
-import { config } from "dotenv";
-import { runSeeders } from "typeorm-extension";
-config();
 
 export enum DbmsType {
   MYSQL = "mysql",

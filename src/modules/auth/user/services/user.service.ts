@@ -3,7 +3,7 @@ import { User } from '@mk/database/entities/user.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { InsertResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
@@ -13,7 +13,7 @@ export class UserService extends TEntityCrudService<User> {
 		super(userRepository)
 	}
 
-	async create(itemData: CreateUserDto): Promise<InsertResult> {
+	async create(itemData: CreateUserDto): Promise<User> {
 		const { password, ...rest } = itemData;
 		const salt = await bcrypt.genSalt();
 		const hashedPassword = await bcrypt.hash(password, salt);
@@ -22,10 +22,10 @@ export class UserService extends TEntityCrudService<User> {
 			password: hashedPassword,
 		});
 
-		return this.userRepository.save(user) as unknown as InsertResult;
+		return this.userRepository.save(user);
 	}
 
-	async update(id: string, itemData: UpdateUserDto): Promise<UpdateResult> {
+	async update(id: string, itemData: UpdateUserDto): Promise<User> {
 		const user = await this.findOne(id);
 
 		if (!user) {
@@ -39,6 +39,6 @@ export class UserService extends TEntityCrudService<User> {
 
 		Object.assign(user, itemData);
 
-		return this.userRepository.save(user) as unknown as UpdateResult;
+		return this.userRepository.save(user);
 	}
 }

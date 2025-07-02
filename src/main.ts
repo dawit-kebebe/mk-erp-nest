@@ -7,10 +7,13 @@ import { corsOptions } from './common/config/cors-config';
 import { validationPipeOptions } from './common/config/validation-pipe-config';
 import { DatabaseExceptionFilter } from './common/error/database.errors';
 import { HttpExceptionFilter } from './common/error/http.errors';
+import { config as configEnvVars } from 'dotenv';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  
+  configEnvVars();
 
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
   app.useGlobalFilters(new DatabaseExceptionFilter());

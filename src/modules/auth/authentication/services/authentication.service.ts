@@ -1,5 +1,5 @@
 import { User } from '@mk/database/entities/user.entity';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -28,30 +28,27 @@ export class AuthenticationService {
 	}
 
 	refreshToken(refreshTokenRequestDto: RefreshAccessTokenRequestDto): RefreshAccessTokenResponseDto {
-		try {
-			const payload = this.jwtService.verify(refreshTokenRequestDto.refresh_token);
 
-			if (!payload || typeof payload !== 'object') {
-				throw new UnauthorizedException('Invalid refresh token payload');
-			}
+		const payload = this.jwtService.verify(refreshTokenRequestDto.refresh_token);
 
-			// Optionally, check if the token is expired or blacklisted here
-			if (!('exp' in payload) || typeof payload.exp !== 'number' || payload.exp <= Date.now() / 1000) {
-				throw new UnauthorizedException('Refresh token has expired or is invalid');
-			}
-
-			const { username, sub, roleId, organizationalUnitId, tenantId } = payload;
-
-			if (!username || !sub || !roleId || !organizationalUnitId || !tenantId) {
-				throw new UnauthorizedException('Refresh token payload missing required properties');
-			}
-
-			const newAccessToken = this.jwtService.sign({ username, sub, roleId, organizationalUnitId, tenantId });
-			return { access_token: newAccessToken };
-
-		} catch (error) {
-			throw new UnauthorizedException('Invalid refresh token', error?.message);
+		if (!payload || typeof payload !== 'object') {
+			throw new UnauthorizedException('Invalid refresh token payload');
 		}
+
+		// Optionally, check if the token is expired or blacklisted here
+		if (!('exp' in payload) || typeof payload.exp !== 'number' || payload.exp <= Date.now() / 1000) {
+			throw new UnauthorizedException('Refresh token has expired or is invalid');
+		}
+
+		const { username, sub, roleId, organizationalUnitId, tenantId } = payload;
+
+		if (!username || !sub || !organizationalUnitId || !tenantId || typeof roleId === 'undefined') {
+			throw new UnauthorizedException('Refresh token payload missing required properties');
+		}
+
+		const newAccessToken = this.jwtService.sign({ username, sub, roleId, organizationalUnitId, tenantId });
+		return { access_token: newAccessToken };
+
 	}
 
 	async login(loginDto: LoginRequestDto,): Promise<LoginResponseDto> {
@@ -65,8 +62,10 @@ export class AuthenticationService {
 			sub: user.id,
 			roleId: user.roleId,
 			organizationalUnitId: user.organizationalUnitId,
-           	tenantId: user.tenantId,
+			tenantId: user.tenantId,
 		};
+
+		Logger.log(`[MK-ERP] - User logged in successfully: ${payload} `)
 
 		return {
 			access_token: this.jwtService.sign(payload),

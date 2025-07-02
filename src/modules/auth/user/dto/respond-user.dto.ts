@@ -16,9 +16,9 @@ export class RespondUserDto {
     
     @Expose()
     @ApiProperty({
-        description: "The user's first name. Must be at least 1-100 characters.",
+        description: "The user's first name. Must be 3-100 characters.",
         example: 'John',
-        minLength: 1,
+        minLength: 3,
         maxLength: 100,
         required: true,
         type: String,
@@ -30,9 +30,9 @@ export class RespondUserDto {
 
     @Expose()
     @ApiProperty({
-        description: "The user's last name. Must be at least 1-100 characters.",
+        description: "The user's last name. Must be 3-100 characters.",
         example: 'Doe',
-        minLength: 1,
+        minLength: 3,
         maxLength: 100,
         required: true,
         type: String,
@@ -67,6 +67,12 @@ export class RespondUserDto {
     email: string;
 
     @Expose()
+    @ApiProperty({
+      description: "Whether the user account is active.",
+      example: true,
+      required: false,
+      type: Boolean,
+    })
     @IsOptional()
     @IsBoolean()
     isActive?: boolean;
