@@ -8,7 +8,6 @@ import { Logger } from '@nestjs/common';
 export default class MainSeeder implements Seeder {
     async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {
 
-        console.log("working");
         Logger.log("Seeding Organizational Unit Type Entity....")
         const organizationalUnitTypeFactory = factoryManager.get(OrganizationalUnitType);
         const organizationalUnitType = await organizationalUnitTypeFactory.save();

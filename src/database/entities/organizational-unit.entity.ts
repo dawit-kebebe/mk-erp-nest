@@ -1,14 +1,14 @@
+import { Tenant } from '@mk/common/entities/tenant.entity';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
-import { User } from './user.entity';
 import { OrganizationalUnitType } from './organizational-unit-type.entity';
-import { Tenant } from '@mk/common/entities/tenant.entity';
+import { User } from './user.entity';
 
 @Entity('organizational_units')
 export class OrganizationalUnit extends Tenant {
@@ -21,7 +21,7 @@ export class OrganizationalUnit extends Tenant {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @ManyToOne(() => OrganizationalUnit, (org) => org.children, { nullable: true })
+  @ManyToOne(() => OrganizationalUnit, (org) => org.children, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parentOrgId' })
   parentOrg?: OrganizationalUnit;
 
@@ -31,7 +31,7 @@ export class OrganizationalUnit extends Tenant {
   @OneToMany(() => OrganizationalUnit, (org) => org.parentOrg)
   children?: OrganizationalUnit[];
 
-  @ManyToOne(() => OrganizationalUnitType, { nullable: false })
+  @ManyToOne(() => OrganizationalUnitType, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'organizationalUnitTypeId' })
   organizationalUnitType: OrganizationalUnitType;
 

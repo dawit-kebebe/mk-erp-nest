@@ -43,7 +43,7 @@ export class User extends Tenant {
   @Column({ type: 'uuid', nullable: true })
   organizationalUnitId: string;
 
-  @ManyToOne(() => OrganizationalUnit, { nullable: true })
+  @ManyToOne(() => OrganizationalUnit, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'organizationalUnitId' })
   organizationalUnit: OrganizationalUnit;
 }

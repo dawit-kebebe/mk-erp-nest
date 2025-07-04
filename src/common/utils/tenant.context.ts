@@ -1,16 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ClsService } from 'nestjs-cls'; // Correct import for ClsService
+import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class TenantContext {
-  constructor(private readonly cls: ClsService) {}
+  private _tenantId: string | null = null;
 
   set tenantId(id: string) {
-    this.cls.set('tenantId', id);
+    this._tenantId = id;
   }
 
   get tenantId(): string {
-    const id = this.cls.get<string>('tenantId');
+    const id = this._tenantId;
     if (!id) {
       // It's good practice to log or provide more context for unauthorized access
       console.warn('Attempted to access tenantId when not set in context.');

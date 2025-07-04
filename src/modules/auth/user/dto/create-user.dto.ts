@@ -85,5 +85,5 @@ export class CreateUserDto {
     })
     @IsUUID()
     @IsOptional()
-    organizationalUnitId?: string;
+    organizationalUnitId: string;
 }

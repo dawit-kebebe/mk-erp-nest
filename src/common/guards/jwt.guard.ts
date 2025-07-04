@@ -23,7 +23,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (!token) {
         throw new UnauthorizedException('Token missing from Authorization header');
     }
-
+    
     try {
         const decoded: any = this.jwtService.verify(token, {
             secret: this.configService.get<string>('JWT_SECRET')

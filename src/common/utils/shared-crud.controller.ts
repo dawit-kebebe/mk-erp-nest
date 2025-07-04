@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from "@nestjs/common";
-import { TEntityCrudService } from "./shared-crud.service";
+import { Body, Delete, Get, Param, Post, Put, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { ObjectLiteral } from "typeorm";
 import { plainToInstance } from "class-transformer";
+import { ObjectLiteral } from "typeorm";
+import { TEntityCrudService } from "./shared-crud.service";
+import { IsUUID } from "class-validator";
 
 export type TEntityCrudOptions = {
     createDto: { new(): NonNullable<unknown> };
@@ -15,7 +16,7 @@ export type TEntityCrudOptions = {
 export function TEntityCrudController<T extends ObjectLiteral>(
     options: TEntityCrudOptions,
 ) {
-    @Controller()
+    // @Controller()
     @UseInterceptors(/* your interceptors if any */)
     @ApiBearerAuth()
     class SchemaCrudControllerHost {

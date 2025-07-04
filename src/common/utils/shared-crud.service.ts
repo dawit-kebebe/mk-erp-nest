@@ -1,49 +1,45 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { ObjectLiteral, Repository, InsertResult, UpdateResult, DeleteResult } from "typeorm";
+import { Injectable } from "@nestjs/common";
+import { DeleteResult, ObjectLiteral, Repository } from "typeorm";
+import { TenantContext } from "./tenant.context";
 
 @Injectable()
-export class TEntityCrudService<T extends ObjectLiteral> {
+export abstract class TEntityCrudService<T extends ObjectLiteral> {
     constructor(
-        private readonly repository: Repository<T>,
+        protected readonly repository: Repository<T>,
+        protected readonly tenantContext?: TenantContext
     ) { }
 
     async findAll(): Promise<T[]> {
-        const data = await this.repository.find();
-        return data;
+        if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.ROOT_TENANT) {
+            return this.repository.find({
+                where: { tenantId: this.tenantContext.tenantId } as any
+            });
+        }
+        return await this.repository.find();
     }
 
     async findOne(id: string): Promise<T | null> {
+        if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.ROOT_TENANT) {
+            return this.repository.findOne({
+                where: { id: id, tenantId: this.tenantContext.tenantId } as any
+            });
+        }
+
         return await this.repository.findOne({
-            where: {
-                id
-            } as any
+            where: { id } as any
         });
     }
 
-    async create(itemData: any): Promise<T | T[]> {
-        const item = this.repository.create(itemData);
-        return await this.repository.save(item);
-    }
-
-    async update(id: string, itemData: any): Promise<T> {
-        const item = await this.repository.preload({
-            id,
-            ...itemData,
-        });
-
-        if (!item) {
-            throw new NotFoundException(`Item with id ${id} not found`);
-        }
-
-        try {
-            return await this.repository.save(item);
-        } catch (error) {
-            throw new BadRequestException(error?.message);
-        }
-
-    }
-
+    abstract create(itemData: any): Promise<T | T[]>;
+    abstract update(id: string, itemData: any): Promise<T>;
+    
     async delete(id: string): Promise<DeleteResult> {
+        if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.ROOT_TENANT) {
+            return this.repository.delete({
+                where: { id: id, tenantId: this.tenantContext.tenantId } as any
+            });
+        }
+        
         return await this.repository.delete(id);
     }
 }

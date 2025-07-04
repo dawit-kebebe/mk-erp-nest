@@ -1,4 +1,3 @@
-import { TenantAwareSubscriber } from "@mk/common/typeorm/tenant.subscriber";
 import { DataSource, DataSourceOptions } from "typeorm";
 
 export enum DbmsType {

@@ -99,5 +99,5 @@ export class RespondUserDto {
     })
     @IsUUID()
     @IsOptional()
-    organizationalUnitId?: string;
+    organizationalUnitId: string;
 }
