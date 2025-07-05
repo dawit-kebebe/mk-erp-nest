@@ -79,11 +79,10 @@ export class CreateUserDto {
     @ApiProperty({
         description: "The user's organization ID (UUID). Optional.",
         example: '550e8400-e29b-41d4-a716-446655440001',
-        required: false,
+        required: true,
         type: String,
         format: 'uuid',
     })
     @IsUUID()
-    @IsOptional()
     organizationalUnitId: string;
 }

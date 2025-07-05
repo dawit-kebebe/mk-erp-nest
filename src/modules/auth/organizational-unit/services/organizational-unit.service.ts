@@ -30,6 +30,8 @@ export class OrganizationalUnitService extends TEntityCrudService<Organizational
             throw new ForbiddenException('Tenant ID is missing from context.');
         }
 
+        const entity = this.repo.create({ ...dto });
+
         // Parent constraint
         if (dto.parentOrgId) {
             if (!isUUID(dto.parentOrgId)) {
@@ -40,11 +42,16 @@ export class OrganizationalUnitService extends TEntityCrudService<Organizational
             if (!parent || (parent.tenantId !== tenantId && tenantId !== this.superTenantId)) {
                 throw new ForbiddenException('Cannot assign parent outside of tenant scope.');
             }
+
+            entity.tenantId = parent.tenantId;
         } else if (tenantId !== this.superTenantId) {
             throw new ForbiddenException('Cannot create root organizational unit.');
+        }else {
+            const newEntity = await this.repo.save(entity);
+            entity.tenantId = newEntity.id;
         }
 
-        const entity = this.repo.create({ ...dto, tenantId });
+        
         return this.repo.save(entity);
     }
 
