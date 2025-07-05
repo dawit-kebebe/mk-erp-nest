@@ -64,6 +64,13 @@ PORT=3000
 
 # CORS Allowed Origins (comma-separated URLs)  
 ALLOWED_ORIGINS=http://localhost:3000
+
+# Root Tenant Configuration  
+ROOT_TENANT='f1c59dda-1957-42f3-b80a-0848dbc2050f'
+
+# Super Admin Configuration  
+SUPER_ADMIN_EMAIL='super-admin@eotcmk.org'
+SUPER_ADMIN_PASSWORD='Pass123'
 ```
 
 **Environment Variable Validation:**
@@ -84,6 +91,9 @@ The application enforces strict validation of these environment variables using 
 * **JWT\_EXPIRES\_IN**: (Required) JWT expiration time in seconds. Must be a positive number. Defaults to 3600\.
 * **PORT**: (Required) Application port number. Defaults to 3000\.
 * **ALLOWED\_ORIGINS**: (Required) A comma-separated string of allowed CORS origins. This string is transformed into an array of validated URLs. Defaults to http://localhost:3000.
+* **ROOT_TENANT**: (Required) UUID string for the root tenant. Defaults to 'f1c59dda-1957-42f3-b80a-0848dbc2050f'.
+* **SUPER_ADMIN_EMAIL**: (Required) Email address for the default super admin user.
+* **SUPER_ADMIN_PASSWORD**: (Required) Alphanumeric password for the default super admin user. Must be at least 6 characters.
 
 ## **Available Scripts**
 
