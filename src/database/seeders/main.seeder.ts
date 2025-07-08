@@ -4,6 +4,7 @@ import { OrganizationalUnitType } from '../entities/organizational-unit-type.ent
 import { OrganizationalUnit } from '../entities/organizational-unit.entity';
 import { User } from '../entities/user.entity';
 import { Logger } from '@nestjs/common';
+import { Role } from '../entities/role.entity';
 
 export default class MainSeeder implements Seeder {
     async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {
@@ -18,13 +19,16 @@ export default class MainSeeder implements Seeder {
             organizationalUnitTypeId: organizationalUnitType.id
         })
 
+        Logger.log("Seeding Super Admin Role Entity....")
+        const roleFactory = factoryManager.get(Role);
+        const role = await roleFactory.save()
 
         Logger.log("Seeding Super Admin User Entity....")
         const userFactory = factoryManager.get(User);
         const user = await userFactory.save({
-            organizationalUnitId: organizationalUnit.id
+            organizationalUnitId: organizationalUnit.id,
+            roleId: role.id
         })
-
 
     }
 }

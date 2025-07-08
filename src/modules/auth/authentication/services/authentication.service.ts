@@ -8,11 +8,16 @@ import { LoginRequestDto } from '../dto/login-request.dto';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { RefreshAccessTokenRequestDto } from '../dto/refresh-access-token-request.dto';
 import { RefreshAccessTokenResponseDto } from '../dto/refresh-access-token-response.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthenticationService {
 
-	constructor(@InjectRepository(User) private readonly userRepository: Repository<User>, @Inject() private readonly jwtService: JwtService) { }
+	constructor(
+		@InjectRepository(User) private readonly userRepository: Repository<User>, 
+		@Inject() private readonly jwtService: JwtService, 
+		@Inject() private readonly configService: ConfigService
+	) { }
 
 	async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
 		const user = await this.userRepository.findOne({ where: { email } });
@@ -69,7 +74,7 @@ export class AuthenticationService {
 
 		return {
 			access_token: this.jwtService.sign(payload),
-			refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' })
+			refresh_token: this.jwtService.sign(payload, { expiresIn: this.configService.get<string>("JWT_REFRESH_EXPIRATION_TIME"), secret: this.configService.get<string>("JWT_REFRESH_SECRET") })
 		};
 	}
 

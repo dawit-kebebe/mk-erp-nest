@@ -7,6 +7,7 @@ export const OrganizationalUnitFactory = setSeederFactory(OrganizationalUnit, ()
 
     organizationalUnit.name = "Super Admin Unit.";
     organizationalUnit.description = "The Super Admin Unit.";
+    organizationalUnit.tenantId = process.env.ROOT_TENANT || "f1c59dda-1957-42f3-b80a-0848dbc2050f";
 
     return organizationalUnit;
 });

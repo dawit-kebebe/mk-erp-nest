@@ -1,13 +1,9 @@
 import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
 import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
-import { GraphCycleDetectorService } from '@mk/common/utils/shared-graph-cycle-detector.service';
 import { TenantContext } from '@mk/common/utils/tenant.context';
-import { Feature } from '@mk/database/entities/feature.entity';
 import { OrganizationalUnitType } from '@mk/database/entities/organizational-unit-type.entity';
 import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
-import { PermissionFeature } from '@mk/database/entities/permission-feature.entity';
-import { PermissionAction } from '@mk/database/entities/permission.action.entity';
-import { Permission } from '@mk/database/entities/permission.entity';
+
 import { Role } from '@mk/database/entities/role.entity';
 import { User } from '@mk/database/entities/user.entity';
 import { Module } from '@nestjs/common';
@@ -21,11 +17,13 @@ import { OrganizationalUnitTypeController } from './organizational-unit/controll
 import { OrganizationalUnitController } from './organizational-unit/controllers/organizational-unit.controller';
 import { OrganizationalUnitTypeService } from './organizational-unit/services/organizational-unit-type.service';
 import { OrganizationalUnitService } from './organizational-unit/services/organizational-unit.service';
+import { RoleController } from './role/controllers/role.controller';
+import { RoleService } from './role/services/role.service';
 import { UserController } from './user/controllers/user.controller';
 import { UserService } from './user/services/user.service';
 
- @Module({
-   imports: [
+@Module({
+  imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -36,11 +34,11 @@ import { UserService } from './user/services/user.service';
       }),
     }),
     TypeOrmModule.forFeature([
-      User, OrganizationalUnit, Role, Permission, Feature, OrganizationalUnitType, PermissionFeature, PermissionAction
+      User, OrganizationalUnit, Role, OrganizationalUnitType
     ])
   ],
   exports: [JwtModule, PassportModule],
-  controllers: [UserController, AuthenticationController, OrganizationalUnitController, OrganizationalUnitTypeController],
-  providers: [JwtAuthGuard, TenancyGuard, UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, GraphCycleDetectorService, TenantContext]
+  controllers: [UserController, AuthenticationController, OrganizationalUnitController, OrganizationalUnitTypeController, RoleController],
+  providers: [JwtAuthGuard, TenancyGuard, UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, RoleService, TenantContext]
 })
 export class AuthModule { }

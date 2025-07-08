@@ -2,10 +2,10 @@ import { setSeederFactory } from 'typeorm-extension';
 import { User } from '../entities/user.entity';
 import * as bcrypt from "bcrypt";
 
-export const UserFactory = setSeederFactory(User, () => {
+export const UserFactory = setSeederFactory(User, async () => {
   const user = new User();
 
-  const bcryptSalt = bcrypt.salt();
+  const bcryptSalt = await bcrypt.genSalt();
   
   user.fName = "Super";
   user.lName = "Admin";

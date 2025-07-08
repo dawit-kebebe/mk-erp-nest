@@ -1,22 +1,30 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PermissionFeature } from './permission-feature.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Role } from "./role.entity";
 
-@Entity('permissions')
+@Entity('permission')
 export class Permission {
-  @ApiProperty({ description: 'Unique identifier for the permission', example: 'b1a2c3d4-e5f6-7890-abcd-1234567890ab' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Unique tag for the permission', example: 'USER_CREATE' })
-  @Column({ type: 'varchar', length: 100, unique: true })
-  tag: string;
+  @Column({ name: 'feature_tag', type: 'varchar', length: 100, unique: true })
+  featureTag: string;
 
-  @ApiPropertyOptional({ description: 'Description of the permission', example: 'Allows creation of users' })
-  @Column({ type: 'text', nullable: true })
-  description?: string;
+  @Column({ type: 'boolean', default: false })
+  view: boolean;
 
-  @ApiPropertyOptional({ type: () => [PermissionFeature], description: 'Features associated with this permission' })
-  @OneToMany(() => PermissionFeature, (pf) => pf.permission, { cascade: true })
-  permissionFeatures: PermissionFeature[];
+  @Column({ type: 'boolean', default: false })
+  add: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  update: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  delete: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  approve: boolean;
+
+  @ManyToOne(() => Role, (role) => role.permissions)
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
 }

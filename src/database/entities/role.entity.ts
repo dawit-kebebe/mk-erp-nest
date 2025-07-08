@@ -1,9 +1,8 @@
 import {
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
+  OneToMany,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 import { Permission } from './permission.entity';
 
@@ -18,7 +17,9 @@ export class Role {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @ManyToOne(() => Permission, { nullable: false })
-  @JoinColumn({ name: 'permissionId', referencedColumnName: 'id' })
-  permission: Permission;
+  @OneToMany(() => Permission, (perm) => perm.role, {
+    cascade: true,
+    eager: true, // optional: auto-loads permissions
+  })
+  permissions: Permission[];
 }
