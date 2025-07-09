@@ -79,7 +79,8 @@ export class AuthenticationService {
 			if (!role)
 				throw new UnauthorizedException('Invalid role ID');
 
-			await this.cacheManager.set(payload.roleId, role);
+			// Cache with proper namespace
+			await this.cacheManager.set(`role:${payload.roleId}`, role);
 		}
 
 		Logger.log(`[MK-ERP] - User logged in successfully: ${payload} `)

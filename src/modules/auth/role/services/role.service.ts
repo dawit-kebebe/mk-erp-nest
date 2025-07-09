@@ -17,15 +17,19 @@ export class RoleService extends TGenericEntityCrudService<Role> {
 		super(roleRepository)
 	}
 
-	async create(itemData: CreateRoleDto): Promise<Role> {
-		const role = await this.create(itemData);
-		await this.cacheManager.set(role.id, role);
+	async create(itemData: CreateRoleDto): Promise<Role | Role[]> {
+		const role = await super.create(itemData);
+		if (Array.isArray(role)) {
+			await Promise.all(role.map(r => this.cacheManager.set(`role:${r.id}`, r)));
+		} else {
+			await this.cacheManager.set(`role:${role.id}`, role);
+		}
 		return role;
 	}
 
 	async update(id: string, itemData: UpdateRoleDto): Promise<Role> {
-		const role = await this.update(id, itemData);
-		await this.cacheManager.set(role.id, role);
+		const role = await super.update(id, itemData);
+		await this.cacheManager.set(`role:${role.id}`, role);
 		return role;
 	}
 }

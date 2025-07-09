@@ -25,15 +25,12 @@ export class RoleGuard implements CanActivate {
         }
 
         const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-            REQUIRED_PERMISSIONS_KEY, // This is the key 'requiredPermissions' defined in your decorator
+            REQUIRED_PERMISSIONS_KEY,
             [context.getHandler(), context.getClass()], // Look on the method first, then the class
         );
 
-        // const url = request.url;
         const method = request.method;
-        const role = await this.cacheManager.get<Role>(user.roleId);
-        
-        console.log(requiredPermissions, role)
+        const role = await this.cacheManager.get<Role>(`role:${user.roleId}`);
 
         if (!role) {
             return false;
@@ -42,7 +39,6 @@ export class RoleGuard implements CanActivate {
         if (!requiredPermissions || requiredPermissions.length === 0) {
             return true;
         }
-
 
         return requiredPermissions.some((permission) => {
             const currentPermission = role.permissions.find((perm) => perm.featureTag === permission);
