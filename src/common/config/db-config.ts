@@ -1,5 +1,5 @@
-import { DataSource, DataSourceOptions } from "typeorm";
 import { ConfigService } from "@nestjs/config";
+import { DataSourceOptions } from "typeorm";
 
 export enum DbmsType {
 	MYSQL = "mysql",

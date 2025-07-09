@@ -25,7 +25,10 @@ const {
 } = process.env;
 
 const dbms = DB_DBMS as DbmsType;
-const port = Number(DB_PORT);
+const port = Number(DB_PORT) || 3306;
+if (isNaN(port)) {
+  throw new Error('Invalid DB_PORT value. Must be a valid number.');
+}
 
 const baseConfig = {
   host: DB_HOST,
