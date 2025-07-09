@@ -1,6 +1,6 @@
 import { Role } from "@mk/database/entities/role.entity";
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
-import { CanActivate, ExecutionContext, Inject, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -40,7 +40,9 @@ export class RoleGuard implements CanActivate {
             return true;
         }
 
-        return requiredPermissions.some((permission) => {
+        let permissionError;
+
+        const permitted = requiredPermissions.every((permission) => {
             const currentPermission = role.permissions.find((perm) => perm.featureTag === permission);
             if (!currentPermission) {
                 return false;
@@ -62,7 +64,15 @@ export class RoleGuard implements CanActivate {
                 return true
             }
 
+            permissionError = `${method} is not allowed for feature ${currentPermission}.`;
+
             return false;
         })
+
+        if (!permitted) {
+            throw new ForbiddenException(permissionError);
+        }
+
+        return permitted;
     }
 }
