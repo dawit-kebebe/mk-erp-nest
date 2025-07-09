@@ -1,35 +1,31 @@
-import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Param,
-	Post,
-	Put,
-	UseGuards,
-} from '@nestjs/common';
-import {
-	ApiBearerAuth,
-	ApiBody,
-	ApiOperation,
-	ApiParam,
-	ApiResponse,
-	ApiTags,
-} from '@nestjs/swagger';
-import { CreateRoleDto } from '../dto/create-role.dto';
-import { UpdateRoleDto } from '../dto/update-role.dto';
-import { RoleService } from '../services/role.service';
+import { FEATURES } from '@mk/common/enum/feature.enum';
 import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
+import { RoleGuard } from '@mk/common/guards/role.guard';
 import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
 import { TEntityCrudController } from '@mk/common/utils/shared-crud.controller';
 import { Role } from '@mk/database/entities/role.entity';
-import { RespondRoleDto } from '../dto/respond-role.dto';
-import { FEATURES } from '@mk/common/enum/feature.enum';
+import {
+	Controller,
+	Get,
+	UseGuards
+} from '@nestjs/common';
+import {
+	ApiBearerAuth,
+	ApiOperation,
+	ApiResponse,
+	ApiTags
+} from '@nestjs/swagger';
+import { CreateRoleDto } from '../dto/create-role.dto';
 import { RespondFeatureListDto } from '../dto/respond-feature-list.dto';
+import { RespondRoleDto } from '../dto/respond-role.dto';
+import { UpdateRoleDto } from '../dto/update-role.dto';
+import { RoleService } from '../services/role.service';
+import { RequiredPermissions } from '@mk/common/decorators/RequiredPermission';
 
 @ApiTags('Role')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, TenancyGuard)
+@UseGuards(JwtAuthGuard, TenancyGuard, RoleGuard)
+@RequiredPermissions(FEATURES.ROLE)
 @Controller('role')
 export class RoleController extends TEntityCrudController<Role>({
 	createDto: CreateRoleDto,

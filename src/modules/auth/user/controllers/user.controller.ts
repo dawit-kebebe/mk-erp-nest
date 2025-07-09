@@ -1,4 +1,5 @@
 import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
+import { RoleGuard } from '@mk/common/guards/role.guard';
 import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
 import { TEntityCrudController } from '@mk/common/utils/shared-crud.controller';
 import { User } from '@mk/database/entities/user.entity';
@@ -7,9 +8,12 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { RespondUserDto } from '../dto/respond-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserService } from '../services/user.service';
+import { RequiredPermissions } from '@mk/common/decorators/RequiredPermission';
+import { FEATURES } from '@mk/common/enum/feature.enum';
 
 @Controller('user')
-@UseGuards(JwtAuthGuard, TenancyGuard)
+@RequiredPermissions(FEATURES.USER)
+@UseGuards(JwtAuthGuard, TenancyGuard, RoleGuard)
 export class UserController extends TEntityCrudController<User>({
     createDto: CreateUserDto,
     updateDto: UpdateUserDto,

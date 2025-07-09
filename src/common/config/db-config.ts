@@ -9,18 +9,18 @@ export enum DbmsType {
 
 // Accept a ConfigService instance to fetch config values
 export const dataSourceOptions = (configService: ConfigService) => {
-  const dbms = configService.get<DbmsType>('DB_DBMS', DbmsType.MYSQL);
-  const port = Number(configService.get<string>('DB_PORT', '3306')) || 3306;
+  const dbms = configService.get<DbmsType>('DB_DBMS');
+  const port = Number(configService.get<string>('DB_PORT'));
 
   const baseConfig = {
-    host: configService.get<string>('DB_HOST', 'localhost'),
+    host: configService.get<string>('DB_HOST'),
     port,
-    username: configService.get<string>('DB_USERNAME', 'root'),
-    password: configService.get<string>('DB_PASSWORD', ''),
-    database: configService.get<string>('DB_DATABASE', 'erp-nest'),
+    username: configService.get<string>('DB_USERNAME'),
+    password: configService.get<string>('DB_PASSWORD'),
+    database: configService.get<string>('DB_DATABASE'),
     entities: ["dist/database/entities/*.entity.js"],
     migrations: ["dist/database/migrations/*.js"],
-    synchronize: configService.get<string>('DB_SYNCHRONIZE', 'false') === 'true',
+    synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true',
     logging: true,
   };
 

@@ -1,5 +1,8 @@
+import { Role } from '@mk/database/entities/role.entity';
 import { User } from '@mk/database/entities/user.entity';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -8,19 +11,20 @@ import { LoginRequestDto } from '../dto/login-request.dto';
 import { LoginResponseDto } from '../dto/login-response.dto';
 import { RefreshAccessTokenRequestDto } from '../dto/refresh-access-token-request.dto';
 import { RefreshAccessTokenResponseDto } from '../dto/refresh-access-token-response.dto';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthenticationService {
 
 	constructor(
-		@InjectRepository(User) private readonly userRepository: Repository<User>, 
-		@Inject() private readonly jwtService: JwtService, 
-		@Inject() private readonly configService: ConfigService
+		@InjectRepository(User) private readonly userRepository: Repository<User>,
+		@InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+		@Inject() private readonly jwtService: JwtService,
+		@Inject() private readonly configService: ConfigService,
+		@Inject(CACHE_MANAGER) private cacheManager: Cache
 	) { }
 
 	async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
-		const user = await this.userRepository.findOne({ where: { email } });
+		const user = await this.userRepository.findOne({ where: { email }, relations: ['role'] });
 
 		if (user && (await bcrypt.compare(password, user.password))) {
 			// Exclude password in a type-safe way
@@ -69,6 +73,14 @@ export class AuthenticationService {
 			organizationalUnitId: user.organizationalUnitId,
 			tenantId: user.tenantId,
 		};
+
+		if (payload.roleId) {
+			const role = user.role;
+			if (!role)
+				throw new UnauthorizedException('Invalid role ID');
+
+			await this.cacheManager.set(payload.roleId, role);
+		}
 
 		Logger.log(`[MK-ERP] - User logged in successfully: ${payload} `)
 

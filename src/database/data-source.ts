@@ -1,4 +1,6 @@
+import { config } from "dotenv";
 import { DataSource, DataSourceOptions } from "typeorm";
+config();
 
 export enum DbmsType {
   MYSQL = "mysql",
@@ -23,7 +25,7 @@ const {
 } = process.env;
 
 const dbms = DB_DBMS as DbmsType;
-const port = Number(DB_PORT) || 3306;
+const port = Number(DB_PORT);
 
 const baseConfig = {
   host: DB_HOST,
@@ -53,7 +55,6 @@ export const dataSourceOptions = (
       ...baseConfig,
     }
 ) satisfies DataSourceOptions;
-
 
 const dataSource = new DataSource(dataSourceOptions);
 
