@@ -9,9 +9,10 @@ import { CreateOrganizationalUnitTypeDto } from "../dto/create-organizational-un
 import { RespondOrganizationalUnitTypeDto } from "../dto/respond-organizational-unit-type.dto";
 import { UpdateOrganizationalUnitTypeDto } from "../dto/update-organizational-unit-type.dto";
 import { OrganizationalUnitTypeService } from "../services/organizational-unit-type.service";
+import { RoleGuard } from "@mk/common/guards/role.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @RequiredPermissions(FEATURES.ORGANIZATIONAL_UNIT)
 @Controller('organizational-unit-type')
 export class OrganizationalUnitTypeController extends TEntityCrudController<OrganizationalUnitType>({
