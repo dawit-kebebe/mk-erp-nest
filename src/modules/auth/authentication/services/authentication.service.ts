@@ -17,7 +17,6 @@ export class AuthenticationService {
 
 	constructor(
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
-		@InjectRepository(Role) private readonly roleRepository: Repository<Role>,
 		@Inject() private readonly jwtService: JwtService,
 		@Inject() private readonly configService: ConfigService,
 		@Inject(CACHE_MANAGER) private cacheManager: Cache

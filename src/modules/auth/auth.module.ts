@@ -1,9 +1,10 @@
 import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
 import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
-import { TenantContext } from '@mk/common/utils/tenant.context';
 import { OrganizationalUnitType } from '@mk/database/entities/organizational-unit-type.entity';
 import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
 
+import { RoleGuard } from '@mk/common/guards/role.guard';
+import { ContextModule } from '@mk/common/modules/context.module';
 import { Role } from '@mk/database/entities/role.entity';
 import { User } from '@mk/database/entities/user.entity';
 import { Module } from '@nestjs/common';
@@ -35,10 +36,11 @@ import { UserService } from './user/services/user.service';
     }),
     TypeOrmModule.forFeature([
       User, OrganizationalUnit, Role, OrganizationalUnitType
-    ])
+    ]),
+    ContextModule
   ],
   exports: [JwtModule, PassportModule],
   controllers: [UserController, AuthenticationController, OrganizationalUnitController, OrganizationalUnitTypeController, RoleController],
-  providers: [JwtAuthGuard, TenancyGuard, UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, RoleService, TenantContext]
+  providers: [JwtAuthGuard, TenancyGuard, RoleGuard, UserService, AuthenticationService, OrganizationalUnitService, OrganizationalUnitTypeService, RoleService]
 })
 export class AuthModule { }

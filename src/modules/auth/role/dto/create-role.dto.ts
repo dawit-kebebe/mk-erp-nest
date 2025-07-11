@@ -1,6 +1,26 @@
+import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
 import { FEATURES } from '@mk/common/enum/feature.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayNotEmpty, IsArray, IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateIf } from 'class-validator';
+
+class CreateAccessLevelDto {
+  @ApiProperty({ description: 'The name of the access level', enum: ACCESS_LEVEL, example: ACCESS_LEVEL.CHILDREN, required: true })
+  @IsEnum(ACCESS_LEVEL)
+  accessLevelTag: ACCESS_LEVEL;
+
+  @ApiProperty({
+    description: 'The list organizational units of which this role has access to, if any. Only required if the access level is set to MULTI_UNIT.',
+    required: false,
+    type: [String],
+    example: ['a3f1c2d4-5678-1234-9abc-def012345678']
+  })
+  @ValidateIf((dto) => dto.accessLevelTag === ACCESS_LEVEL.MULTI_UNIT)
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsUUID('all')
+  organizationalUnits?: string[]
+}
 
 class CreatePermissionDto {
   @ApiProperty({ description: 'The name of the feature', enum: FEATURES, example: FEATURES.USER })
@@ -31,6 +51,10 @@ class CreatePermissionDto {
   @IsBoolean()
   @IsOptional()
   approve?: boolean = false;
+
+  @ApiProperty({ description: 'Access Level assigned to the role', type: () => CreateAccessLevelDto })
+  @Type(() => CreateAccessLevelDto)
+  accessLevel: CreateAccessLevelDto;
 }
 
 export class CreateRoleDto {
@@ -44,5 +68,8 @@ export class CreateRoleDto {
   description?: string;
 
   @ApiProperty({ description: 'Permissions assigned to the role', type: () => [CreatePermissionDto] })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Type(() => CreatePermissionDto)
   permissions: CreatePermissionDto[];
 }

@@ -1,5 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Role } from "./role.entity";
+import { AccessLevel } from "./access-level.entity";
 
 @Entity('permission')
 export class Permission {
@@ -27,4 +28,10 @@ export class Permission {
   @ManyToOne(() => Role, (role) => role.permissions)
   @JoinColumn({ name: 'roleId' })
   role: Role;
+
+  @OneToOne(() => AccessLevel, (accessLevel) => accessLevel.permission, {
+    cascade: true,
+    eager: true,
+  })
+  accessLevel: AccessLevel
 }

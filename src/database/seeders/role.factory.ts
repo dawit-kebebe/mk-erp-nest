@@ -2,6 +2,7 @@ import { setSeederFactory } from 'typeorm-extension';
 import { Role } from '../entities/role.entity';
 import { FEATURES } from '@mk/common/enum/feature.enum';
 import { Permission } from '../entities/permission.entity';
+import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
 
 export const RoleFactory = setSeederFactory(Role, () => {
   const role = new Role();
@@ -15,7 +16,10 @@ export const RoleFactory = setSeederFactory(Role, () => {
       add: true,
       update: true,
       delete: true,
-      approve: true
+      approve: true,
+      accessLevel: {
+        accessLevelTag: ACCESS_LEVEL.GLOBAL,
+      }
     } as Permission,
     {
       featureTag: FEATURES.USER,
@@ -24,6 +28,9 @@ export const RoleFactory = setSeederFactory(Role, () => {
       update: true,
       delete: true,
       approve: true,
+      accessLevel: {
+        accessLevelTag: ACCESS_LEVEL.GLOBAL,
+      }
     } as Permission,
     {
       featureTag: FEATURES.ORGANIZATIONAL_UNIT,
@@ -32,8 +39,13 @@ export const RoleFactory = setSeederFactory(Role, () => {
       update: true,
       delete: true,
       approve: true,
+      accessLevel: {
+        accessLevelTag: ACCESS_LEVEL.GLOBAL,
+      }
     } as Permission
   ]
+
+  role.tenantId = process.env.GLOBAL_TENANT || 'default-tenant-uuid';
 
   return role;
 });

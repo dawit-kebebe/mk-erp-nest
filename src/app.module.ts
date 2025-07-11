@@ -7,6 +7,7 @@ import { TenantContext } from './common/utils/tenant.context';
 import { AuthModule } from './modules/auth/auth.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AccessLevelContext } from './common/utils/access-level.context';
 
 @Module({
 	imports: [
@@ -20,7 +21,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 		AuthModule
 	],
 	controllers: [],
-	providers: [TenantContext, {
+	providers: [{
 		provide: APP_INTERCEPTOR,
 		useClass: CacheInterceptor,
 	}]

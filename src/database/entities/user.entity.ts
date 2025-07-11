@@ -6,12 +6,11 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { OrganizationalUnit } from './organizational-unit.entity';
 import { Role } from './role.entity';
-import { Expose } from 'class-transformer';
+import { TenantOrganizationalUnitAware } from '@mk/common/entities/tenant-org-unit.entity';
 
 @Entity('users')
-export class User extends Tenant {
+export class User extends TenantOrganizationalUnitAware {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,15 +34,8 @@ export class User extends Tenant {
 
   @Column({ type: 'uuid', nullable: true })
   roleId?: string;
-
+ 
   @ManyToOne(() => Role, { nullable: true })
   @JoinColumn({ name: 'roleId' })
   role?: Role;
-
-  @Column({ type: 'uuid', nullable: true })
-  organizationalUnitId: string;
-
-  @ManyToOne(() => OrganizationalUnit, { nullable: true, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'organizationalUnitId' })
-  organizationalUnit: OrganizationalUnit;
 }

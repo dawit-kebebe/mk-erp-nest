@@ -1,13 +1,16 @@
+import { Tenant } from '@mk/common/entities/tenant.entity';
 import {
   Column,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
+import { AccessLevel } from './access-level.entity';
 import { Permission } from './permission.entity';
 
 @Entity('roles')
-export class Role {
+export class Role extends Tenant {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -22,4 +25,5 @@ export class Role {
     eager: true, // optional: auto-loads permissions
   })
   permissions: Permission[];
+
 }

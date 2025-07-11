@@ -1,7 +1,28 @@
+import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
 import { FEATURES } from '@mk/common/enum/feature.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateIf } from 'class-validator';
+
+class RespondAccessLevelDto {
+  @ApiProperty({ description: 'The name of the access level', enum: ACCESS_LEVEL, example: ACCESS_LEVEL.CHILDREN, required: true })
+  @Expose()
+  @IsEnum(ACCESS_LEVEL)
+  accessLevelTag: ACCESS_LEVEL;
+
+  @ApiProperty({
+    description: 'The list organizational units of which this role has access to, if any. Only presented if the access level is set to MULTI_UNIT.',
+    required: false,
+    type: [String],
+    example: ['a3f1c2d4-5678-1234-9abc-def012345678']
+  })
+  @Expose()
+  @ValidateIf((dto) => dto.accessLevelTag === ACCESS_LEVEL.MULTI_UNIT)
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsUUID()
+  organizationalUnits?: string[]
+}
 
 class RespondPermissionDto {
   @ApiProperty({ description: 'The name of the feature', enum: FEATURES, example: FEATURES.USER })
@@ -38,6 +59,11 @@ class RespondPermissionDto {
   @IsOptional()
   @Expose()
   approve?: boolean = false;
+
+  @ApiProperty({ description: 'Access Level assigned to the role', type: () => [RespondAccessLevelDto] })
+  @Expose()
+  @Type(() => RespondAccessLevelDto)
+  accessLevel: RespondAccessLevelDto;
 }
 
 export class RespondRoleDto {

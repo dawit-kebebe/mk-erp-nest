@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
+import { AccessLevel } from './access-level.entity';
 import { OrganizationalUnitType } from './organizational-unit-type.entity';
 import { User } from './user.entity';
 
@@ -40,4 +41,8 @@ export class OrganizationalUnit extends Tenant {
 
   @OneToMany(() => User, (user) => user.organizationalUnit)
   users?: User[];
+
+  @ManyToOne(() => AccessLevel, (al) => al.organizationalUnits)
+  @JoinColumn({ name: 'accessLevelId' })
+  accessLevel: AccessLevel;
 }
