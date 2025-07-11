@@ -34,7 +34,7 @@ export class UserService extends TEntityCrudService<User> {
 	}
 
 	async create(itemData: CreateUserDto): Promise<User> {
-		const superTenantId = this.configService.get<string>("ROOT_TENANT");
+		const superTenantId = this.configService.get<string>("GLOBAL_TENANT");
 		const tenantId = this.tenantContext.tenantId;
 
 		if (!isUUID(tenantId)) throw new ForbiddenException('Tenant ID is missing from context.');
@@ -56,7 +56,7 @@ export class UserService extends TEntityCrudService<User> {
 	}
 
 	async update(id: string, itemData: UpdateUserDto): Promise<User> {
-		const superTenantId = this.configService.get<string>("ROOT_TENANT");
+		const superTenantId = this.configService.get<string>("GLOBAL_TENANT");
 		const tenantId = this.tenantContext.tenantId;
 
 		if (!isUUID(tenantId)) throw new ForbiddenException('Tenant ID is missing from context.');

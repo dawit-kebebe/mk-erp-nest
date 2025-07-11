@@ -20,7 +20,7 @@ export class OrganizationalUnitService extends TEntityCrudService<Organizational
         @Inject() readonly tenantContext: TenantContext,
     ) {
         super(repo, tenantContext);
-        this.superTenantId = this.config.get<string>('ROOT_TENANT')!;
+        this.superTenantId = this.config.get<string>('GLOBAL_TENANT')!;
     }
 
     // Create organizational unit without tree logic

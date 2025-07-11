@@ -32,8 +32,8 @@ export const configModuleOptions: ConfigModuleOptions<Record<string, any>> = {
         ),
 
         // Root Tenant Configuration
-        ROOT_TENANT: zod.string()
-            .uuid("ROOT_TENANT is required and must be a valid UUID.")
+        GLOBAL_TENANT: zod.string()
+            .uuid("GLOBAL_TENANT is required and must be a valid UUID.")
             .default('f1c59dda-1957-42f3-b80a-0848dbc2050f'),
 
         //Super Admin Configuration

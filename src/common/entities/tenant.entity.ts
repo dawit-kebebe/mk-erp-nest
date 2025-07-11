@@ -3,6 +3,6 @@ import { Audit } from "./audit.entity";
 import { Exclude } from "class-transformer";
 export class Tenant extends Audit {
     @Exclude()
-    @Column({ type: 'uuid', default: process.env.ROOT_TENANT || 'default-tenant-uuid' })
+    @Column({ type: 'uuid', default: process.env.GLOBAL_TENANT || 'default-tenant-uuid' })
     tenantId: string
 }
