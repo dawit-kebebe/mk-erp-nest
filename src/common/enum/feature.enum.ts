@@ -1,5 +1,6 @@
 export enum FEATURES {
     USER = "User",
     ROLE = "Role",
-    ORGANIZATIONAL_UNIT = "Organizational Unit"
+    ORGANIZATIONAL_UNIT = "Organizational Unit",
+    BUDGET_PLAN = "Budget Plan",
 }

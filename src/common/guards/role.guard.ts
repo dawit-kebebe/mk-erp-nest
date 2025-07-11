@@ -21,7 +21,7 @@ export class RoleGuard implements CanActivate {
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
-    async canActivate(context: ExecutionContext) {///: boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         const user = request?.user;
         

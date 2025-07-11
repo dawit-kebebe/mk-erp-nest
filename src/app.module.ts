@@ -1,13 +1,12 @@
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configModuleOptions } from './common/config/config-module-options';
 import { TypeOrmService } from './common/utils/shared-typeorm.service';
-import { TenantContext } from './common/utils/tenant.context';
 import { AuthModule } from './modules/auth/auth.module';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { AccessLevelContext } from './common/utils/access-level.context';
+import { WorkflowModule } from './modules/workflow/workflow.module';
 
 @Module({
 	imports: [
@@ -18,7 +17,8 @@ import { AccessLevelContext } from './common/utils/access-level.context';
 		CacheModule.register({
 			isGlobal: true
 		}),
-		AuthModule
+		AuthModule,
+		WorkflowModule
 	],
 	controllers: [],
 	providers: [{
