@@ -3,14 +3,15 @@ import { FEATURES } from "@mk/common/enum/feature.enum"
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from "class-transformer";
 import { IsString, IsNotEmpty, IsOptional, IsEnum, IsBoolean, IsArray, ArrayNotEmpty, IsUUID } from 'class-validator';
+import { Expose } from "class-transformer";
 
-export class CreateWorkflowStepDefinitionDto {
-
+export class RespondWorkflowStepDefinitionDto {
     @ApiProperty({
         example: 1,
         description: "Defines the sequential order of this step within its workflow (e.g., 1, 2, 3...). Used for flow control.",
     })
     @IsNotEmpty()
+    @Expose()
     stepOrder: number;
 
     @ApiProperty({
@@ -19,6 +20,7 @@ export class CreateWorkflowStepDefinitionDto {
     })
     @IsString()
     @IsNotEmpty()
+    @Expose()
     stepName: string;
 
     @ApiPropertyOptional({
@@ -27,15 +29,16 @@ export class CreateWorkflowStepDefinitionDto {
     })
     @IsOptional()
     @IsString()
+    @Expose()
     description?: string;
 
-    
     @ApiProperty({
         example: APPROVAL_STRATEGY.ALL_MUST_APPROVE,
         enum: APPROVAL_STRATEGY,
         description: "Defines how multiple approvers at this step are handled.",
     })
     @IsEnum(APPROVAL_STRATEGY)
+    @Expose()
     approvalStrategy: APPROVAL_STRATEGY;
 
     @ApiProperty({
@@ -43,6 +46,7 @@ export class CreateWorkflowStepDefinitionDto {
         description: "If true, all tasks for this step can be processed concurrently. Automatically set based on approvalStrategy: true for ALL_MUST_APPROVE or MAJORITY, false for ONE_OF_MANY.",
         default: false,
     })
+    @Expose()
     get isParallel(): boolean {
         return (
             this.approvalStrategy === APPROVAL_STRATEGY.ALL_MUST_APPROVE ||
@@ -58,17 +62,28 @@ export class CreateWorkflowStepDefinitionDto {
     @IsArray()
     @ArrayNotEmpty()
     @IsString({ each: true })
+    @Expose()
     requiredRoleIds: string[];
 
 }
 
-export class CreateWorkflowDefinitionDto {
+export class RespondWorkflowDefinitionDto {
+
+    @ApiProperty({
+        example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        description: "Unique identifier for the workflow definition.",
+    })
+    @IsUUID()
+    @Expose()
+    id: string;
+    
     @ApiProperty({
         example: "Budget Plan Approval Workflow",
         description: "A human-readable name for the workflow.",
     })
     @IsString()
     @IsNotEmpty()
+    @Expose()
     name: string;
 
     @ApiPropertyOptional({
@@ -77,6 +92,7 @@ export class CreateWorkflowDefinitionDto {
     })
     @IsOptional()
     @IsString()
+    @Expose()
     description?: string;
 
     @ApiProperty({
@@ -85,6 +101,7 @@ export class CreateWorkflowDefinitionDto {
         description: "The business entity type this workflow governs.",
     })
     @IsEnum(FEATURES)
+    @Expose()
     appliesToFeature: FEATURES;
 
     @ApiProperty({
@@ -93,6 +110,7 @@ export class CreateWorkflowDefinitionDto {
     })
     @IsUUID()
     @IsNotEmpty()
+    @Expose()
     organizationalUnitId: string;
 
     @ApiProperty({
@@ -100,14 +118,16 @@ export class CreateWorkflowDefinitionDto {
         description: "A flag to enable or disable the workflow definition.",
     })
     @IsBoolean()
+    @Expose()
     isActive: boolean;
 
     @ApiProperty({
-        type: [CreateWorkflowStepDefinitionDto],
+        type: [RespondWorkflowStepDefinitionDto],
         description: "The ordered steps that make up this workflow definition.",
     })
     @ArrayNotEmpty()
     @IsArray()
-    @Type(() => CreateWorkflowStepDefinitionDto)
-    steps: CreateWorkflowStepDefinitionDto[];
+    @Type(() => RespondWorkflowStepDefinitionDto)
+    @Expose()
+    steps: RespondWorkflowStepDefinitionDto[];
 }

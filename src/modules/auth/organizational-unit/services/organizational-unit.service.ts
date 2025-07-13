@@ -1,5 +1,5 @@
 import { TEntityCrudService } from '@mk/common/utils/shared-crud.service';
-import { TenantContext } from '@mk/common/utils/tenant.context';
+import { TenantContext } from '@mk/common/contexts/tenant.context';
 import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -30,29 +30,30 @@ export class OrganizationalUnitService extends TEntityCrudService<Organizational
             throw new ForbiddenException('Tenant ID is missing from context.');
         }
 
-        const entity = this.repo.create({ ...dto });
+        return await this.repo.manager.transaction(async (entityManager) => {
+            const entity = this.repo.create({ ...dto });
 
-        // Parent constraint
-        if (dto.parentOrgId) {
-            if (!isUUID(dto.parentOrgId)) {
-                throw new BadRequestException('Invalid parent organizational unit ID.');
+            // Parent constraint
+            if (dto.parentOrgId) {
+                if (!isUUID(dto.parentOrgId)) {
+                    throw new BadRequestException('Invalid parent organizational unit ID.');
+                }
+
+                const parent = await entityManager.findOne(OrganizationalUnit, { where: { id: dto.parentOrgId } as any });
+                if (!parent || (parent.tenantId !== tenantId && tenantId !== this.superTenantId)) {
+                    throw new ForbiddenException('Cannot assign parent outside of tenant scope.');
+                }
+
+                entity.tenantId = parent.tenantId;
+            } else if (tenantId !== this.superTenantId) {
+                throw new ForbiddenException('Cannot create root organizational unit.');
+            } else {
+                const newEntity = await entityManager.save(OrganizationalUnit, entity);
+                entity.tenantId = newEntity.id;
             }
-            
-            const parent = await this.repo.findOne({ where: { id: dto.parentOrgId } as any });
-            if (!parent || (parent.tenantId !== tenantId && tenantId !== this.superTenantId)) {
-                throw new ForbiddenException('Cannot assign parent outside of tenant scope.');
-            }
 
-            entity.tenantId = parent.tenantId;
-        } else if (tenantId !== this.superTenantId) {
-            throw new ForbiddenException('Cannot create root organizational unit.');
-        }else {
-            const newEntity = await this.repo.save(entity);
-            entity.tenantId = newEntity.id;
-        }
-
-        
-        return this.repo.save(entity);
+            return await entityManager.save(OrganizationalUnit, entity);
+        });
     }
 
     // Update organizational unit without tree logic

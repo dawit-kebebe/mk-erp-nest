@@ -5,9 +5,10 @@ import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable }
 import { Reflector } from "@nestjs/core";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { AccessLevelContext } from "../contexts/access-level.context";
+import { ApprovalContext } from "../contexts/approval.context";
 import { REQUIRED_PERMISSIONS_KEY } from "../decorators/RequiredPermission";
 import { ACCESS_LEVEL } from "../enum/access-level.enum";
-import { AccessLevelContext } from "../utils/access-level.context";
 import { buildTree, getSubTree, TreeNode } from "../utils/organizational-unit-tree-builder";
 
 @Injectable()
@@ -17,6 +18,7 @@ export class RoleGuard implements CanActivate {
         @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
         @InjectRepository(OrganizationalUnit) private readonly organizationalUnitRepo: Repository<OrganizationalUnit>,
         @Inject() private readonly accessLevelContext: AccessLevelContext,
+        @Inject() private readonly approvalContext: ApprovalContext,
         @Inject() private readonly reflector: Reflector,
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
@@ -26,21 +28,21 @@ export class RoleGuard implements CanActivate {
         const user = request?.user;
         
         if (!user?.roleId || !user.organizationalUnitId) {
-            return false;
+            throw new ForbiddenException("User role or organizational unit not found.");
         }
         
         const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
             REQUIRED_PERMISSIONS_KEY,
-            [context.getHandler(), context.getClass()], // Look on the method first, then the class
+            [context.getHandler(), context.getClass()],
         );
 
         const method = request.method;
         let role = await this.cacheManager.get<Role>(`role:${user.roleId}`);
 
         if (!role) {
-            const loadedRole = await this.roleRepo.findOne({ where: { id: user.roleId } })
+            const loadedRole = await this.roleRepo.findOne({ where: { id: user.roleId } });
             if (!loadedRole) {
-                return false;
+                throw new ForbiddenException("Role not found for user.");
             }
             await this.cacheManager.set(`role:${user.roleId}`, loadedRole);
             role = loadedRole;
@@ -50,13 +52,13 @@ export class RoleGuard implements CanActivate {
         if (!cachedOrgTree) {
             const fullOrg = await this.organizationalUnitRepo.find();
             if (!fullOrg || fullOrg.length === 0) {
-                return false;
+                throw new ForbiddenException("Organizational units not found.");
             }
             const orgTree = buildTree(fullOrg);
             await this.cacheManager.set(`org-tree:${user.organizationalUnitId}`, orgTree);
             cachedOrgTree = await this.cacheManager.get(`org-tree:${user.organizationalUnitId}`);
             if (!cachedOrgTree) {
-                return false;
+                throw new ForbiddenException("Failed to cache organizational unit tree.");
             }
         }
 
@@ -71,11 +73,12 @@ export class RoleGuard implements CanActivate {
         });
 
         const currentUserOrg = getSubTree(user.organizationalUnitId, cachedOrgTree);
-        if (!currentUserOrg)
-            return false;
+        if (!currentUserOrg) {
+            throw new ForbiddenException("User's organizational unit not found in tree.");
+        }
 
         if (orgArray.length === 0) {
-            return false;
+            throw new ForbiddenException("No organizational units available.");
         }
 
         if (!requiredPermissions || requiredPermissions.length === 0) {
@@ -140,6 +143,10 @@ export class RoleGuard implements CanActivate {
                     break;
             }
             if (!permitted) break;
+
+            if (currentPermission.approve) {
+                this.approvalContext.pushApprovalContext(currentPermission);
+            }
 
             if (method === 'GET' && currentPermission.view) {
                 continue;

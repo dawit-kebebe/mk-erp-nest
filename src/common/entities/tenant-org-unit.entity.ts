@@ -1,12 +1,13 @@
-import { Exclude } from "class-transformer";
-import { Column, JoinColumn, ManyToOne } from "typeorm";
+import { OrganizationalUnit } from "../../database/entities/organizational-unit.entity";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Tenant } from "./tenant.entity";
-import { OrganizationalUnit } from "@mk/database/entities/organizational-unit.entity";
+
+// @Entity()
 export class TenantOrganizationalUnitAware extends Tenant {
     @Column({ type: 'uuid', nullable: false })
     organizationalUnitId: string;
 
-    @ManyToOne(() => OrganizationalUnit, { nullable: false, onDelete: 'CASCADE' })
+    @ManyToOne(() => OrganizationalUnit, { nullable: false, eager: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'organizationalUnitId' })
     organizationalUnit: OrganizationalUnit;
 }

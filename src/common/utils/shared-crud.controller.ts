@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from "@ne
 import { plainToInstance } from "class-transformer";
 import { ObjectLiteral } from "typeorm";
 import { TEntityCrudService } from "./shared-crud.service";
-import { IsUUID } from "class-validator";
 
 export type TEntityCrudOptions = {
     createDto: { new(): NonNullable<unknown> };

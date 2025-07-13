@@ -39,8 +39,8 @@ export class OrganizationalUnit extends Tenant {
   @Column({ type: 'uuid' })
   organizationalUnitTypeId: string;
 
-  @OneToMany(() => User, (user) => user.organizationalUnit)
-  users?: User[];
+  // @OneToMany(() => User, (user) => user.organizationalUnit)
+  // users?: User[];
 
   @ManyToOne(() => AccessLevel, (al) => al.organizationalUnits)
   @JoinColumn({ name: 'accessLevelId' })

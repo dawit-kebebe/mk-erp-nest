@@ -3,10 +3,10 @@ import { DeleteResult, ObjectLiteral, Repository } from "typeorm";
 import { TenantContext } from "../contexts/tenant.context";
 
 @Injectable()
-export abstract class TEntityCrudService<T extends ObjectLiteral> {
+export abstract class TOUAwareEntityCrudService<T extends ObjectLiteral> {
     constructor(
         protected readonly repository: Repository<T>,
-        protected readonly tenantContext?: TenantContext
+        protected readonly tenantContext?: TenantContext,
     ) { }
 
     async findAll(): Promise<T[]> {

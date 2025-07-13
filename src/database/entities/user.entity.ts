@@ -1,4 +1,4 @@
-import { Tenant } from '@mk/common/entities/tenant.entity';
+import { TenantOrganizationalUnitAware } from '../../common/entities/tenant-org-unit.entity';
 import {
   Column,
   Entity,
@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { TenantOrganizationalUnitAware } from '@mk/common/entities/tenant-org-unit.entity';
 
 @Entity('users')
 export class User extends TenantOrganizationalUnitAware {

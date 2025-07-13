@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  JoinColumn,
 } from 'typeorm';
 import { WorkflowDefinition } from './workflow-definition.entity';
 import { WorkflowTask } from './workflow-task.entity';
@@ -35,7 +36,11 @@ export class WorkflowStepDefinition extends Tenant {
     (workflow) => workflow.steps,
     { onDelete: 'CASCADE' },
   )
+  @JoinColumn({ name: 'workflowDefinitionId' })
   workflowDefinition: WorkflowDefinition;
+
+  @Column({ type: 'uuid', nullable: false })
+  workflowDefinitionId: string;
 
   @ManyToMany(() => Role, { eager: true })
   @JoinTable({

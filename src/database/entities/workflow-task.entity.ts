@@ -51,7 +51,7 @@ export class WorkflowTask extends Tenant {
   @JoinColumn({ name: 'actedByUserId' })
   actedByUser?: User;
 
-  @Column({ type: 'timestamp with time zone', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   actionDate?: Date;
 
   @Column({ type: 'text', nullable: true })

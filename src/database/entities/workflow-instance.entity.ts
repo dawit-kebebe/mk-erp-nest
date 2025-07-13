@@ -1,4 +1,4 @@
-import { Tenant } from '@mk/common/entities/tenant.entity';
+import { Tenant } from '../../common/entities/tenant.entity';
 import { WORKFLOW_STATUS } from '@mk/common/enum/workflow-status.enum';
 import {
   Column,
@@ -59,10 +59,10 @@ export class WorkflowInstance extends Tenant {
   @JoinColumn({ name: 'submittedByUserId' })
   submittedByUser: User;
 
-  @Column({ type: 'timestamp with time zone' })
+  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"  })
   submissionDate: Date;
 
-  @Column({ type: 'timestamp with time zone', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
   completionDate?: Date;
 
   @OneToMany(

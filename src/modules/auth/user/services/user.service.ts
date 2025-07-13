@@ -1,5 +1,5 @@
 import { TEntityCrudService } from "@mk/common/utils/shared-crud.service";
-import { TenantContext } from "@mk/common/utils/tenant.context";
+import { TenantContext } from "@mk/common/contexts/tenant.context";
 import { OrganizationalUnit } from "@mk/database/entities/organizational-unit.entity";
 import { User } from "@mk/database/entities/user.entity";
 import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
