@@ -1,4 +1,4 @@
-import { TenantOrganizationalUnitAware } from '../../common/entities/tenant-org-unit.entity';
+import { TenantOrganizationalUnitAware } from '@mk/common/entities/tenant-org-unit.entity';
 import {
   Column,
   Entity,

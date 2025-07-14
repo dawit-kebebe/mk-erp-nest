@@ -1,4 +1,4 @@
-import { Tenant } from '../../common/entities/tenant.entity';
+import { Tenant } from '@mk/common/entities/tenant.entity';
 import { WORKFLOW_STATUS } from '@mk/common/enum/workflow-status.enum';
 import {
   Column,
@@ -25,7 +25,7 @@ export class WorkflowInstance extends Tenant {
   @ManyToOne(
     () => WorkflowDefinition,
     (definition) => definition.instances,
-    { onDelete: 'CASCADE' },
+    { onDelete: 'CASCADE', eager: true },
   )
   @JoinColumn({ name: 'workflowDefinitionId' })
   workflowDefinition: WorkflowDefinition;
@@ -69,5 +69,5 @@ export class WorkflowInstance extends Tenant {
     () => WorkflowTask,
     (task: WorkflowTask) => task.workflowInstance,
   )
-  tasks: WorkflowTask[];
+  tasks?: WorkflowTask[];
 }

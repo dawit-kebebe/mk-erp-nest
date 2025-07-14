@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { AccessLevel } from './access-level.entity';
 import { OrganizationalUnitType } from './organizational-unit-type.entity';
-import { User } from './user.entity';
 
 @Entity('organizational_units')
 export class OrganizationalUnit extends Tenant {
@@ -38,9 +37,6 @@ export class OrganizationalUnit extends Tenant {
 
   @Column({ type: 'uuid' })
   organizationalUnitTypeId: string;
-
-  // @OneToMany(() => User, (user) => user.organizationalUnit)
-  // users?: User[];
 
   @ManyToOne(() => AccessLevel, (al) => al.organizationalUnits)
   @JoinColumn({ name: 'accessLevelId' })

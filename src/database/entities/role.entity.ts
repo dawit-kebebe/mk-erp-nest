@@ -3,10 +3,8 @@ import {
   Column,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
-import { AccessLevel } from './access-level.entity';
 import { Permission } from './permission.entity';
 
 @Entity('roles')

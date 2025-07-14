@@ -1,0 +1,7 @@
+
+export enum WORKFLOW_TASK {
+    APPROVE =  'APPROVE',
+    REJECT = 'REJECT',
+    CANCEL = 'CANCEL',
+    NEEDS_REVISION = 'NEEDS_REVISION',
+}

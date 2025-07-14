@@ -1,8 +1,9 @@
+import { IsSequential } from "@mk/common/decorators/validate-sequencial-workflow-step";
 import { APPROVAL_STRATEGY } from "@mk/common/enum/approval-strategy.enum";
-import { FEATURES } from "@mk/common/enum/feature.enum"
+import { FEATURES } from "@mk/common/enum/feature.enum";
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from "class-transformer";
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsBoolean, IsArray, ArrayNotEmpty, IsUUID } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateWorkflowStepDefinitionDto {
 
@@ -108,6 +109,7 @@ export class CreateWorkflowDefinitionDto {
     })
     @ArrayNotEmpty()
     @IsArray()
+    @IsSequential({ message: 'Steps must have sequential stepOrder starting from 1' })
     @Type(() => CreateWorkflowStepDefinitionDto)
     steps: CreateWorkflowStepDefinitionDto[];
 }

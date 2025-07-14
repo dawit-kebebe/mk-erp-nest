@@ -1,6 +1,7 @@
-import { WORKFLOW_STATUS } from "@mk/common/enum/workflow-status.enum"
+import { FEATURES } from "@mk/common/enum/feature.enum";
+import { WORKFLOW_STATUS } from "@mk/common/enum/workflow-status.enum";
 import { ApiProperty } from '@nestjs/swagger';
-import { IsUUID, IsString, IsEnum, IsOptional, IsDate } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateWorkflowInstanceDto {
     @ApiProperty({
@@ -21,8 +22,8 @@ export class CreateWorkflowInstanceDto {
         example: 'BudgetPlan',
         description: 'The type of the business entity (e.g., "BudgetPlan", "ExpenseRequest").',
     })
-    @IsString()
-    entityType: string;
+    @IsEnum(FEATURES)
+    entityType: FEATURES;
 
     @ApiProperty({
         example: WORKFLOW_STATUS.IN_PROGRESS,

@@ -1,15 +1,16 @@
 import { Tenant } from '@mk/common/entities/tenant.entity';
+import { WORKFLOW_TASK } from '@mk/common/enum/workflow-task.enum';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { WorkflowStepDefinition } from './workflow-step-definition.entity';
-import { WorkflowInstance } from './workflow-instance.entity';
+import { Role } from './role.entity';
 import { User } from './user.entity';
-import { WORKFLOW_STATUS } from '@mk/common/enum/workflow-status.enum';
+import { WorkflowInstance } from './workflow-instance.entity';
+import { WorkflowStepDefinition } from './workflow-step-definition.entity';
 
 @Entity('workflow_tasks')
 export class WorkflowTask extends Tenant {
@@ -22,7 +23,6 @@ export class WorkflowTask extends Tenant {
   @ManyToOne(
     () => WorkflowStepDefinition,
     (step) => step.tasks,
-    { onDelete: 'CASCADE' }
   )
   @JoinColumn({ name: 'workflowStepDefinitionId' })
   workflowStepDefinition: WorkflowStepDefinition;
@@ -38,8 +38,8 @@ export class WorkflowTask extends Tenant {
   @JoinColumn({ name: 'workflowInstanceId' })
   workflowInstance: WorkflowInstance;
 
-  @Column({ type: 'enum', enum: WORKFLOW_STATUS, default: WORKFLOW_STATUS.IN_PROGRESS })
-  status: WORKFLOW_STATUS;
+  @Column({ type: 'enum', enum: WORKFLOW_TASK, nullable: false })
+  status: WORKFLOW_TASK;
 
   @Column('uuid', { nullable: true })
   actedByUserId?: string;
@@ -51,7 +51,17 @@ export class WorkflowTask extends Tenant {
   @JoinColumn({ name: 'actedByUserId' })
   actedByUser?: User;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column('uuid', { nullable: true })
+  actedByRoleId?: string;
+
+  @ManyToOne(
+    () => Role,
+    { nullable: true }
+  )
+  @JoinColumn({ name: 'actedByRoleId' })
+  actedByRole?: Role;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   actionDate?: Date;
 
   @Column({ type: 'text', nullable: true })

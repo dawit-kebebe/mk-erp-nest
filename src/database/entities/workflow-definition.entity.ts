@@ -1,11 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { TenantOrganizationalUnitAware } from '../../common/entities/tenant-org-unit.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { TenantOrganizationalUnitAware } from '@mk/common/entities/tenant-org-unit.entity';
 import { FEATURES } from '@mk/common/enum/feature.enum';
 import { WorkflowInstance } from './workflow-instance.entity';
 import { WorkflowStepDefinition } from './workflow-step-definition.entity';
 
 @Entity('workflow_definitions')
+@Unique(['appliesToFeature', 'tenantId'])
 export class WorkflowDefinition extends TenantOrganizationalUnitAware {
   @PrimaryGeneratedColumn('uuid')
   id: string;

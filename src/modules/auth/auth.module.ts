@@ -1,10 +1,9 @@
 import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
+import { RoleGuard } from '@mk/common/guards/role.guard';
 import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
+import { ContextModule } from '@mk/common/modules/context.module';
 import { OrganizationalUnitType } from '@mk/database/entities/organizational-unit-type.entity';
 import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
-
-import { RoleGuard } from '@mk/common/guards/role.guard';
-import { ContextModule } from '@mk/common/modules/context.module';
 import { Role } from '@mk/database/entities/role.entity';
 import { User } from '@mk/database/entities/user.entity';
 import { Module } from '@nestjs/common';
