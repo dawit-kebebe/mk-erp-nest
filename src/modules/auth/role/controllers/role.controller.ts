@@ -21,6 +21,8 @@ import { RespondRoleDto } from '../dto/respond-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { RoleService } from '../services/role.service';
 import { RequiredPermissions } from '@mk/common/decorators/RequiredPermission';
+import { RespondAccessLevelListDto } from '../dto/respond-access-level-list.dto';
+import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
 
 @ApiTags('Role')
 @ApiBearerAuth()
@@ -50,5 +52,20 @@ export class RoleController extends TEntityCrudController<Role>({
 		const features = new RespondFeatureListDto();
 		features.featureTags = Object.values(FEATURES);
 		return features;
+	}
+
+	@Get('/access-level-tags')
+	@ApiOperation({
+		summary: `Get all the access level tags.`
+	})
+	@ApiResponse({
+		status: 200,
+		description: `List of access level tags`,
+		type: RespondAccessLevelListDto,
+	})
+	getAccessLevelTags() {
+		const accessLevels = new RespondAccessLevelListDto();
+		accessLevels.accessLevelTags = Object.values(ACCESS_LEVEL);
+		return accessLevels;
 	}
 }
