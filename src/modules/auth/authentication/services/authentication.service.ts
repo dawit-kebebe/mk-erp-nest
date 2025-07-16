@@ -23,7 +23,7 @@ export class AuthenticationService {
 	) { }
 
 	async validateUser(email: string, password: string): Promise<Omit<User, 'password'> | null> {
-		const user = await this.userRepository.findOne({ where: { email }, relations: ['role'] });
+		const user = await this.userRepository.findOne({ where: { email }, relations: ['role', 'role.permissions', 'role.permissions.accessLevel'] });
 
 		if (user && (await bcrypt.compare(password, user.password))) {
 			// Exclude password in a type-safe way

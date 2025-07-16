@@ -95,6 +95,12 @@ export class RoleGuard implements CanActivate {
                 break;
             }
 
+            if (!currentPermission.accessLevel || !currentPermission.accessLevel.accessLevelTag) {
+                permitted = false;
+                permissionError = `Missing access level for feature ${permission}.`;
+                break;
+            }
+
             switch (currentPermission.accessLevel.accessLevelTag) {
                 case ACCESS_LEVEL.CHILDREN:
                     this.accessLevelContext.pushAccessLevelContext({

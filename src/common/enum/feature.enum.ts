@@ -3,4 +3,5 @@ export enum FEATURES {
     ROLE = "Role",
     ORGANIZATIONAL_UNIT = "Organizational Unit",
     BUDGET_PLAN = "Budget Plan",
+    BUDGET_CALENDAR = "Budget Calendar",
 }

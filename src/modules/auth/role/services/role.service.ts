@@ -1,19 +1,17 @@
-import { TGenericEntityCrudService } from '@mk/common/utils/shared-generic-cu.service';
+import { TenantContext } from '@mk/common/contexts/tenant.context';
+import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
+import { TEntityCrudService } from '@mk/common/utils/shared-crud.service';
+import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
 import { Role } from '@mk/database/entities/role.entity';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
+import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
-import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
-import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
-import { AccessLevelContext } from '@mk/common/contexts/access-level.context';
-import { TEntityCrudService } from '@mk/common/utils/shared-crud.service';
-import { TenantContext } from '@mk/common/contexts/tenant.context';
-import { ConfigService } from '@nestjs/config';
-import { isUUID } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class RoleService extends TEntityCrudService<Role> {
