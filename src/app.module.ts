@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configModuleOptions } from './common/config/config-module-options';
 import { TypeOrmService } from './common/utils/shared-typeorm.service';
 import { AuthModule } from './modules/auth/auth.module';
+import { BudgetModule } from './modules/budget/budget.module';
+import { FinanceModule } from './modules/finance/finance.module';
 import { WorkflowModule } from './modules/workflow/workflow.module';
 
 @Module({
@@ -18,7 +20,9 @@ import { WorkflowModule } from './modules/workflow/workflow.module';
 			isGlobal: true
 		}),
 		AuthModule,
-		WorkflowModule
+		WorkflowModule,
+		BudgetModule,
+		FinanceModule
 	],
 	controllers: [],
 	providers: [{

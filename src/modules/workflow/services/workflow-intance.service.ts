@@ -12,6 +12,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { isUUID } from "class-validator";
 import { Repository } from "typeorm";
 import { CreateWorkflowInstanceDto } from "../dto/create-workflow-instance.dto";
+import { FEATURES } from "@mk/common/enum/feature.enum";
 
 @Injectable()
 export class WorkflowInstanceService extends TEntityCrudService<WorkflowInstance> {
@@ -52,6 +53,22 @@ export class WorkflowInstanceService extends TEntityCrudService<WorkflowInstance
 
     update(id: string, itemData: any): Promise<WorkflowInstance> {
         throw new BadRequestException("cannot update workflow instance directly, use specific methods for updating workflow steps or tasks.");
+    }
+
+    async findByIdAndWorkflowType(entityId: string, workflowType: FEATURES): Promise<WorkflowInstance | null> {
+        const tenantId = this.tenantContext.tenantId;
+        if (!isUUID(tenantId)) {
+            throw new ForbiddenException('Tenant ID is missing from context.');
+        }
+
+        if (!isUUID(entityId)) {
+            throw new BadRequestException('Invalid ID format.');
+        }
+
+        return await this.workflowInstanceRepository.findOne({
+            where: { entityId, tenantId, entityType: workflowType },
+            relations: ['workflowDefinition', 'currentStep', 'currentStep.requiredRoles']
+        });
     }
 
     async approveWorkflowInstance(instanceId: string, message?: string): Promise<WorkflowInstance> {
@@ -240,6 +257,7 @@ export class WorkflowInstanceService extends TEntityCrudService<WorkflowInstance
         if (!isUUID(tenantId)) {
             throw new ForbiddenException('Tenant ID is missing from context.');
         }
+        
         return await this.workflowInstanceRepository.manager.transaction(async (entityManager) => {
             const user = await entityManager.findOne(User, { where: { id: this.userContext.userId, tenantId }, relations: ['role'] });
             if (!user) {

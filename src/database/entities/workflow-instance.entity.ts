@@ -1,4 +1,5 @@
 import { Tenant } from '@mk/common/entities/tenant.entity';
+import { FEATURES } from '@mk/common/enum/feature.enum';
 import { WORKFLOW_STATUS } from '@mk/common/enum/workflow-status.enum';
 import {
   Column,
@@ -7,14 +8,15 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { User } from './user.entity';
 import { WorkflowDefinition } from './workflow-definition.entity';
 import { WorkflowStepDefinition } from './workflow-step-definition.entity';
 import { WorkflowTask } from './workflow-task.entity';
-import { FEATURES } from '@mk/common/enum/feature.enum';
 
 @Entity('workflow_instances')
+@Unique(['entityId', 'entityType', 'tenantId'])
 export class WorkflowInstance extends Tenant {
   @PrimaryGeneratedColumn('uuid')
   id: string;

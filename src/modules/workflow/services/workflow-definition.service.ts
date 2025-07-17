@@ -10,6 +10,7 @@ import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 import { CreateWorkflowDefinitionDto } from '../dto/create-workflow-definition.dto';
 import { UpdateWorkflowDefinitionDto } from '../dto/update-workflow-definition.dto';
+import { FEATURES } from '@mk/common/enum/feature.enum';
 
 @Injectable()
 export class WorkflowDefinitionService extends TEntityCrudService<WorkflowDefinition> {
@@ -22,6 +23,18 @@ export class WorkflowDefinitionService extends TEntityCrudService<WorkflowDefini
     ) {
         super(workflowRepository, tenantContext);
         this.superTenantId = this.config.get<string>('GLOBAL_TENANT')!;
+    }
+
+    async findByFeature(feature: FEATURES): Promise<WorkflowDefinition | null> {
+        const tenantId = this.tenantContext.tenantId;
+        if (!isUUID(tenantId)) {
+            throw new ForbiddenException('Tenant ID is missing from context.');
+        }
+
+        return await this.workflowRepository.findOne({
+            where: { appliesToFeature: feature, tenantId },
+            relations: ['steps', 'steps.requiredRoles']
+        });
     }
 
     async findStepByOrderAndWorkflowDefinitionId(

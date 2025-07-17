@@ -6,6 +6,7 @@ import { WorkflowDefinition } from '@mk/database/entities/workflow-definition.en
 import { WorkflowStepDefinition } from '@mk/database/entities/workflow-step-definition.entity';
 import { OrganizationalUnit } from '@mk/database/entities/organizational-unit.entity';
 import { ContextModule } from '@mk/common/modules/context.module';
+import { DependanciesModule } from '@mk/common/modules/dependancies.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { ContextModule } from '@mk/common/modules/context.module';
       WorkflowStepDefinition,
       OrganizationalUnit
     ]),
-    ContextModule
+    ContextModule,
+    DependanciesModule
   ],
   controllers: [WorkflowDefinitionController],
   providers: [WorkflowDefinitionService],
