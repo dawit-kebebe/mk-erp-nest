@@ -21,7 +21,7 @@ export abstract class TOUAwareEntityCrudService<T extends ObjectLiteral> {
     async findOne(id: string): Promise<T | null> {
         if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.GLOBAL_TENANT) {
             return this.repository.findOne({
-                where: { id: id, tenantId: this.tenantContext.tenantId } as any
+                where: { id, tenantId: this.tenantContext.tenantId } as any
             });
         }
 
@@ -32,14 +32,16 @@ export abstract class TOUAwareEntityCrudService<T extends ObjectLiteral> {
 
     abstract create(itemData: any): Promise<T | T[]>;
     abstract update(id: string, itemData: any): Promise<T>;
-    
+
     async delete(id: string): Promise<DeleteResult> {
         if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.GLOBAL_TENANT) {
             return this.repository.delete({
-                where: { id: id, tenantId: this.tenantContext.tenantId } as any
+                where: { id, tenantId: this.tenantContext.tenantId } as any
             });
         }
-        
-        return await this.repository.delete(id);
+
+        return await this.repository.delete({
+            where: { id } as any
+        });
     }
 }

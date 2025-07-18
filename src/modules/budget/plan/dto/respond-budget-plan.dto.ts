@@ -44,6 +44,17 @@ class RespondBudgetPlanItemDto {
 
 export class RespondBudgetPlanDto {
   @ApiProperty({
+    description: "The unique identifier (UUID) of the Budget Plan.",
+    example: "550e8400-e29b-41d4-a716-446655440010",
+    required: true,
+    type: String,
+    format: "uuid",
+  })
+  @IsUUID()
+  @Expose()
+  id: string;
+
+  @ApiProperty({
     description: 'Identifier of the associated budget calendar',
     example: 'd95f88d5-3d48-4a2a-a8d3-4e8f2b5e9f1c'
   })

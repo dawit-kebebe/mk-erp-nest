@@ -1,3 +1,8 @@
 export const validationPipeOptions = {
-    forbidNonWhitelisted: true
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true, // << this is crucial
+    transformOptions: {
+      enableImplicitConversion: true,
+    }
 }

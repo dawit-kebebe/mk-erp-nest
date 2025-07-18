@@ -2,10 +2,11 @@ import { ACCESS_LEVEL } from '@mk/common/enum/access-level.enum';
 import { FEATURES } from '@mk/common/enum/feature.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsBoolean, IsEnum, IsOptional, IsString, IsUUID, ValidateIf } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsBoolean, IsDefined, IsEnum, IsOptional, IsString, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
 
 class CreateAccessLevelDto {
   @ApiProperty({ description: 'The name of the access level', enum: ACCESS_LEVEL, example: ACCESS_LEVEL.CHILDREN, required: true })
+  @IsDefined()
   @IsEnum(ACCESS_LEVEL)
   accessLevelTag: ACCESS_LEVEL;
 
@@ -53,6 +54,8 @@ class CreatePermissionDto {
   approve?: boolean = false;
 
   @ApiProperty({ description: 'Access Level assigned to the role', type: () => CreateAccessLevelDto })
+  @IsDefined()
+  @ValidateNested()
   @Type(() => CreateAccessLevelDto)
   accessLevel: CreateAccessLevelDto;
 }
@@ -70,6 +73,8 @@ export class CreateRoleDto {
   @ApiProperty({ description: 'Permissions assigned to the role', type: () => [CreatePermissionDto] })
   @IsArray()
   @ArrayNotEmpty()
+  @IsDefined() // <-- This ensures it's present
+  @ValidateNested()
   @Type(() => CreatePermissionDto)
   permissions: CreatePermissionDto[];
 }

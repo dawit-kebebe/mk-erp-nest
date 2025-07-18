@@ -8,6 +8,7 @@ import { validationPipeOptions } from './common/config/validation-pipe-config';
 import { DatabaseExceptionFilter } from './common/error/database.errors';
 import { HttpExceptionFilter } from './common/error/http.errors';
 import { config as configEnvVars } from 'dotenv';
+import { ValidationExceptionFilter } from './common/error/validation.error';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
   app.useGlobalFilters(new DatabaseExceptionFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new ValidationExceptionFilter());
   app.enableCors(corsOptions(configService));
 
   const config = new DocumentBuilder()

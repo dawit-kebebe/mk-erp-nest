@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from "@ne
 import { plainToInstance } from "class-transformer";
 import { ObjectLiteral } from "typeorm";
 import { TEntityCrudService } from "./shared-crud.service";
+import { validateOrReject } from "class-validator";
 
 export type TEntityCrudOptions = {
     createDto: { new(): NonNullable<unknown> };
@@ -73,7 +74,13 @@ export function TEntityCrudController<T extends ObjectLiteral>(
         async create(
             @Body() itemData: any
         ) {
-            const data = await this.schemaCrudService.create(itemData)
+            // 👇 Transform plain data into class instance
+            const transformedData = plainToInstance(options.createDto, itemData);
+
+            // 👇 Validate it manually
+            await validateOrReject(transformedData);
+            
+            const data = await this.schemaCrudService.create(transformedData)
             return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 
@@ -99,7 +106,13 @@ export function TEntityCrudController<T extends ObjectLiteral>(
             @Param('id') id: string,
             @Body() itemData: any
         ) {
-            const data = await this.schemaCrudService.update(id, itemData)
+            // 👇 Transform plain data into class instance
+            const transformedData = plainToInstance(options.updateDto, itemData);
+
+            // 👇 Validate it manually
+            await validateOrReject(transformedData);
+
+            const data = await this.schemaCrudService.update(id, transformedData)
             return plainToInstance(options.responseDto, data, { excludeExtraneousValues: true })
         }
 

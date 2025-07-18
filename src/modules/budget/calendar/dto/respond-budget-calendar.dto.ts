@@ -1,9 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, MaxLength, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsDateString, IsEnum, IsUUID } from 'class-validator';
 import { BUDGET_CALENDAR_STATUS } from '@mk/common/enum/budget-calendar-status.enum';
 import { Expose } from 'class-transformer';
 
 export class RespondBudgetCalendarDto {
+  @ApiProperty({
+    description: "The unique identifier (UUID) of the Budget Calendar.",
+    example: "550e8400-e29b-41d4-a716-446655440010",
+    required: true,
+    type: String,
+    format: "uuid",
+  })
+  @IsUUID()
+  @Expose()
+  id: string;
+
   @ApiProperty({
     description: 'Unique name of the budget calendar',
     example: 'FY2023-Q1',

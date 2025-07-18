@@ -1,14 +1,19 @@
+import { JwtAuthGuard } from "@mk/common/guards/jwt.guard";
+import { OrganizationalUnitGuard } from "@mk/common/guards/organizational-unit.guard";
+import { RoleGuard } from "@mk/common/guards/role.guard";
+import { TenancyGuard } from "@mk/common/guards/tenancy.guard";
 import { TEntityCrudController } from "@mk/common/utils/shared-crud.controller";
-import { Controller, Inject, Param, Post } from "@nestjs/common";
+import { BudgetPlan } from "@mk/database/entities/budget-plan.entity";
+import { WorkflowInstance } from "@mk/database/entities/workflow-instance.entity";
+import { Controller, Inject, Param, Post, UseGuards } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { CreateBudgetPlanDto } from "../dto/create-budget-plan.dto";
-import { UpdateBudgetPlanDto } from "../dto/update-budget-plan.dto";
 import { RespondBudgetPlanDto } from "../dto/respond-budget-plan.dto";
-import { BudgetPlan } from "@mk/database/entities/budget-plan.entity";
+import { UpdateBudgetPlanDto } from "../dto/update-budget-plan.dto";
 import { BudgetPlanService } from "../services/budget-plan.service";
-import { WorkflowInstance } from "@mk/database/entities/workflow-instance.entity";
 
 @ApiTags('Budget Plan')
+@UseGuards(JwtAuthGuard, TenancyGuard, RoleGuard, OrganizationalUnitGuard)
 @Controller('budget/plan')
 export class BudgetPlanController extends TEntityCrudController<BudgetPlan>({
   createDto: CreateBudgetPlanDto,
