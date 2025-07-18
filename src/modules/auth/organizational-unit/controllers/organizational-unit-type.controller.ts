@@ -4,13 +4,14 @@ import { JwtAuthGuard } from "@mk/common/guards/jwt.guard";
 import { TEntityCrudController } from "@mk/common/utils/shared-crud.controller";
 import { OrganizationalUnitType } from "@mk/database/entities/organizational-unit-type.entity";
 import { Controller, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CreateOrganizationalUnitTypeDto } from "../dto/create-organizational-unit-type.dto";
 import { RespondOrganizationalUnitTypeDto } from "../dto/respond-organizational-unit-type.dto";
 import { UpdateOrganizationalUnitTypeDto } from "../dto/update-organizational-unit-type.dto";
 import { OrganizationalUnitTypeService } from "../services/organizational-unit-type.service";
 import { RoleGuard } from "@mk/common/guards/role.guard";
 
+@ApiTags("Organizational Unit Type")
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RoleGuard)
 @RequiredPermissions(FEATURES.ORGANIZATIONAL_UNIT)
