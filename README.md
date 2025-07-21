@@ -1,4 +1,4 @@
-<center><img src="./docs/images/MK-ERP-BLUE.png" width="150" alt="ERP System Logo" /></center>
+<p align="center" width="100%"><img src="./docs/images/MK-ERP-BLUE.png" width="150" alt="ERP System Logo" /></p>
 
 # **ERP Backend System**
 
