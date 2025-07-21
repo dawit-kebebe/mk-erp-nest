@@ -1,3 +1,5 @@
+import { RequiredPermissions } from "@mk/common/decorators/RequiredPermission";
+import { FEATURES } from "@mk/common/enum/feature.enum";
 import { JwtAuthGuard } from "@mk/common/guards/jwt.guard";
 import { OrganizationalUnitGuard } from "@mk/common/guards/organizational-unit.guard";
 import { RoleGuard } from "@mk/common/guards/role.guard";
@@ -14,6 +16,7 @@ import { BudgetPlanService } from "../services/budget-plan.service";
 
 @ApiTags('Budget Plan')
 @UseGuards(JwtAuthGuard, TenancyGuard, RoleGuard, OrganizationalUnitGuard)
+@RequiredPermissions(FEATURES.BUDGET_PLAN)
 @Controller('budget/plan')
 export class BudgetPlanController extends TEntityCrudController<BudgetPlan>({
   createDto: CreateBudgetPlanDto,

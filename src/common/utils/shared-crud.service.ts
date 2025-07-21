@@ -36,12 +36,13 @@ export abstract class TEntityCrudService<T extends ObjectLiteral> {
     async delete(id: string): Promise<DeleteResult> {
         if (this.tenantContext && this.tenantContext?.tenantId && this.tenantContext.tenantId !== process.env.GLOBAL_TENANT) {
             return this.repository.delete({
-                where: { id, tenantId: this.tenantContext.tenantId } as any
-            });
+                id: id, 
+                tenantId: this.tenantContext.tenantId
+            } as any);
         }
 
         return await this.repository.delete({
-            where: { id } as any
-        });
+             id: id
+        } as any);
     }
 }

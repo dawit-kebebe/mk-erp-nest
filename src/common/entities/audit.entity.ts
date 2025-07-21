@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Entity } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, Entity, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Audit {

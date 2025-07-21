@@ -12,9 +12,10 @@ import { WorkflowInstanceService } from '@mk/modules/workflow/services/workflow-
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID } from 'class-validator';
-import { Repository } from 'typeorm';
+import { DeleteResult, In, Repository } from 'typeorm';
 import { CreateBudgetPlanDto } from '../dto/create-budget-plan.dto';
 import { UpdateBudgetPlanDto } from '../dto/update-budget-plan.dto';
+import { AccessLevelContext } from '@mk/common/contexts/access-level.context';
 
 @Injectable()
 export class BudgetPlanService extends TEntityCrudService<BudgetPlan> {
@@ -26,10 +27,57 @@ export class BudgetPlanService extends TEntityCrudService<BudgetPlan> {
 		@Inject() private readonly workflowInstanceService: WorkflowInstanceService,
 
 		@Inject() readonly tenantContext: TenantContext,
+		@Inject() private readonly accessLevelContext: AccessLevelContext,
 		@Inject() private readonly organizationalUnitContext: OrganizationalUnitContext,
 		@Inject() private readonly userContext: UserContext
 	) {
 		super(budgetPlanRepository, tenantContext);
+	}
+
+	async findAll(): Promise<BudgetPlan[]> {
+		const tenantId = this.tenantContext.tenantId;
+		if (!isUUID(tenantId)) {
+			throw new ForbiddenException('Invalid or missing tenant ID in context.');
+		}
+
+		const orgUnitIds = this.accessLevelContext.accessLevelContext
+			?.find(level => level.featureTag === FEATURES.BUDGET_PLAN)
+			?.organizationalUnitId
+			?.map(org => typeof org === 'string' ? org : org.id) || [];
+
+		if (orgUnitIds.length === 0) {
+			throw new ForbiddenException('No organizational units found in access level context for budget plan feature.');
+		}
+
+		return this.budgetPlanRepository.find({
+			where: { tenantId, organizationalUnitId: In(orgUnitIds) },
+			relations: ['calendar', 'items', 'items.account'],
+		});
+	}
+
+	async findOne(id: string): Promise<BudgetPlan | null> {
+		const tenantId = this.tenantContext.tenantId;
+		if (!isUUID(tenantId)) {
+			throw new ForbiddenException('Invalid or missing tenant ID in context.');
+		}
+
+		if (!isUUID(id)) {
+			throw new BadRequestException('Invalid ID format.');
+		}
+
+		const orgUnitIds = this.accessLevelContext.accessLevelContext
+			?.find(level => level.featureTag === FEATURES.BUDGET_PLAN)
+			?.organizationalUnitId
+			?.map(org => typeof org === 'string' ? org : org.id) || [];
+
+		if (orgUnitIds.length === 0) {
+			throw new ForbiddenException('No organizational units found in access level context for budget plan feature.');
+		}
+
+		return this.budgetPlanRepository.findOne({
+			where: { id, tenantId, organizationalUnitId: In(orgUnitIds) },
+			relations: ['calendar', 'items', 'items.account'],
+		});
 	}
 
 	async create(dto: CreateBudgetPlanDto): Promise<BudgetPlan> {
@@ -189,10 +237,33 @@ export class BudgetPlanService extends TEntityCrudService<BudgetPlan> {
 				throw new ForbiddenException('Only the user who submitted the budget plan can cancel it.');
 			}
 
-		}else if (!inWorkflow) {
+		} else if (!inWorkflow) {
 			throw new NotFoundException(`Budget plan with ID ${id} is not in workflow.`);
 		}
 
 		this.workflowInstanceService.cancelWorkflowInstance(inWorkflow.id)
+	}
+
+	async delete(id: string): Promise<DeleteResult> {
+		const tenantId = this.tenantContext.tenantId;
+		const organizationalUnitId = this.organizationalUnitContext.organizationalUnitId;
+
+		if (!isUUID(tenantId) || !isUUID(organizationalUnitId)) {
+			throw new ForbiddenException('Tenant, User ID or Organizational Unit ID missing from context.');
+		}
+
+		if (!isUUID(id)) {
+			throw new BadRequestException('Invalid ID format.');
+		}
+
+		const budgetPlan = await this.budgetPlanRepository.findOne({
+			where: { id, tenantId, organizationalUnitId },
+		});
+
+		if (!budgetPlan) {
+			throw new NotFoundException(`Budget plan with ID ${id} not found.`);
+		}
+
+		return this.budgetPlanRepository.delete({ id, tenantId });
 	}
 }

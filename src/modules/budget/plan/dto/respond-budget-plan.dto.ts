@@ -71,4 +71,15 @@ export class RespondBudgetPlanDto {
   @ValidateNested({ each: true })
   @Type(() => RespondBudgetPlanItemDto)
   items: RespondBudgetPlanItemDto[];
+
+  @ApiProperty({
+    description: "The unique identifier (UUID) of the organization.",
+    example: "550e8400-e29b-41d4-a716-446655440010",
+    required: true,
+    type: String,
+    format: "uuid",
+  })
+  @IsUUID()
+  @Expose()
+  organizationalUnitId: string;
 }

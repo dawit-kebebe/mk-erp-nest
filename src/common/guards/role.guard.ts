@@ -10,6 +10,7 @@ import { ApprovalContext } from "../contexts/approval.context";
 import { REQUIRED_PERMISSIONS_KEY } from "../decorators/RequiredPermission";
 import { ACCESS_LEVEL } from "../enum/access-level.enum";
 import { buildTree, getSubTree, TreeNode } from "../utils/organizational-unit-tree-builder";
+import { FEATURES } from "../enum/feature.enum";
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -104,6 +105,7 @@ export class RoleGuard implements CanActivate {
             switch (currentPermission.accessLevel.accessLevelTag) {
                 case ACCESS_LEVEL.CHILDREN:
                     this.accessLevelContext.pushAccessLevelContext({
+                        featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.CHILDREN,
                         organizationalUnitId: [...currentUserOrg.children, currentUserOrg]
                     });
@@ -115,18 +117,21 @@ export class RoleGuard implements CanActivate {
                         break;
                     }
                     this.accessLevelContext.pushAccessLevelContext({
+                        featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.MULTI_UNIT,
                         organizationalUnitId: currentPermission.accessLevel.organizationalUnits
                     });
                     break;
                 case ACCESS_LEVEL.SELF_UNIT:
                     this.accessLevelContext.pushAccessLevelContext({
+                        featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.SELF_UNIT,
                         organizationalUnitId: [currentUserOrg]
                     });
                     break;
                 case ACCESS_LEVEL.GLOBAL:
                     this.accessLevelContext.pushAccessLevelContext({
+                        featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.GLOBAL,
                         organizationalUnitId: orgArray
                     });
@@ -139,6 +144,7 @@ export class RoleGuard implements CanActivate {
                         break;
                     }
                     this.accessLevelContext.pushAccessLevelContext({
+                        featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.ROOT,
                         organizationalUnitId: rootOrg.children
                     });

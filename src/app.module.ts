@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BudgetModule } from './modules/budget/budget.module';
 import { FinanceModule } from './modules/finance/finance.module';
 import { WorkflowModule } from './modules/workflow/workflow.module';
+import { InvalidateCacheInterceptor } from './common/interceptors/cache-invalidator.interceptor';
 
 @Module({
 	imports: [
@@ -25,9 +26,15 @@ import { WorkflowModule } from './modules/workflow/workflow.module';
 		FinanceModule
 	],
 	controllers: [],
-	providers: [{
-		provide: APP_INTERCEPTOR,
-		useClass: CacheInterceptor,
-	}]
+	providers: [
+	// 	{
+	// 	provide: APP_INTERCEPTOR,
+	// 	useClass: CacheInterceptor,
+	// },
+	// {
+	// 	provide: APP_INTERCEPTOR,
+	// 	useClass: InvalidateCacheInterceptor,
+	// }
+]
 })
 export class AppModule { }

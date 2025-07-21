@@ -1,9 +1,12 @@
 import { Body, Delete, Get, Param, Post, Put, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { plainToInstance } from "class-transformer";
-import { ObjectLiteral } from "typeorm";
-import { TEntityCrudService } from "./shared-crud.service";
 import { validateOrReject } from "class-validator";
+import { ObjectLiteral } from "typeorm";
+import { CacheEntityKey } from "../decorators/cache-entity-key.decorator";
+import { InvalidateCacheInterceptor } from "../interceptors/cache-invalidator.interceptor";
+import { TEntityCrudService } from "./shared-crud.service";
+import { CacheKey } from "@nestjs/cache-manager";
 
 export type TEntityCrudOptions = {
     createDto: { new(): NonNullable<unknown> };
@@ -17,7 +20,9 @@ export function TEntityCrudController<T extends ObjectLiteral>(
     options: TEntityCrudOptions,
 ) {
     // @Controller()
-    @UseInterceptors(/* your interceptors if any */)
+    @CacheKey(`http:${options.entityName.toLowerCase().replaceAll(' ', '-').replace('_', '-')}:all`)
+    @CacheEntityKey(`http:${options.entityName.toLowerCase().replaceAll(' ', '-').replace('_', '-')}:all`)
+    // @UseInterceptors(InvalidateCacheInterceptor)
     @ApiBearerAuth()
     class SchemaCrudControllerHost {
         constructor(public readonly schemaCrudService: TEntityCrudService<T>) { }

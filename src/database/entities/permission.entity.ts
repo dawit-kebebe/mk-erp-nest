@@ -1,13 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Role } from "./role.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { AccessLevel } from "./access-level.entity";
+import { Role } from "./role.entity";
 
 @Entity('permission')
+@Unique(['featureTag', 'role'])
 export class Permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'feature_tag', type: 'varchar', length: 100, unique: true })
+  @Column({ name: 'feature_tag', type: 'varchar', length: 100 })
   featureTag: string;
 
   @Column({ type: 'boolean', default: false })

@@ -5,7 +5,8 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
-    PrimaryGeneratedColumn
+    PrimaryGeneratedColumn,
+    Unique
 } from 'typeorm';
 import { BudgetCalendar } from './budget-calendar.entity';
 import { ChartOfAccounts } from './chart-of-accounts.entity';
@@ -27,11 +28,12 @@ export class BudgetPlan extends TenantOrganizationalUnitAware {
 }
 
 @Entity('budget_plans_items')
+@Unique(['budgetPlanId', 'plan'])
 export class BudgetPlanItem {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'varchar', length: 100, unique: true })
+    @Column({ type: 'varchar', length: 100 })
     plan: string;
 
     @Column({ type: 'text', nullable: true })

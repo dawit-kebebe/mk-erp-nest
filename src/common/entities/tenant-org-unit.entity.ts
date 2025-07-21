@@ -1,5 +1,5 @@
+import { Column, JoinColumn, ManyToOne } from "typeorm";
 import { OrganizationalUnit } from "../../database/entities/organizational-unit.entity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Tenant } from "./tenant.entity";
 
 // @Entity()
