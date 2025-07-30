@@ -40,9 +40,12 @@ export class OrganizationalUnitService extends TEntityCrudService<Organizational
                 }
 
                 const parent = await entityManager.findOne(OrganizationalUnit, { where: { id: dto.parentOrgId } as any });
-                if (!parent || (parent.tenantId !== tenantId && tenantId !== this.superTenantId)) {
-                    throw new ForbiddenException('Cannot assign parent outside of tenant scope.');
+                if (!parent) {
+                    throw new NotFoundException('Parent organizational unit does not exist.');
                 }
+
+                if (parent.tenantId !== tenantId && tenantId !== this.superTenantId)
+                    throw new ForbiddenException('Cannot assign parent outside of tenant scope.');
 
                 entity.tenantId = parent.tenantId;
             } else if (tenantId !== this.superTenantId) {

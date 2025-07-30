@@ -3,15 +3,17 @@ import { BUDGET_CALENDAR_STATUS } from '@mk/common/enum/budget-calendar-status.e
 import {
     Column,
     Entity,
-    PrimaryGeneratedColumn
+    PrimaryGeneratedColumn,
+    Unique
 } from 'typeorm';
  
 @Entity('budget_calendars')
+@Unique(['name', 'tenantId'])
 export class BudgetCalendar extends Tenant {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'varchar', length: 50, unique: true })
+    @Column({ type: 'varchar', length: 50 })
     name: string;
 
     @Column({ type: 'text', nullable: true })

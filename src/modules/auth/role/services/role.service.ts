@@ -78,12 +78,26 @@ export class RoleService extends TEntityCrudService<Role> {
 		}
 
 		const whereClause = tenantId === this.superTenantId ? { id } : { id, tenantId } as any;
-		const existing = await this.roleRepository.findOne({ where: whereClause });
+		const existing = await this.roleRepository.findOne({ where: whereClause, relations: ['permissions', 'permissions.accessLevel', 'permissions.accessLevel.organizationalUnits'] });
 		if (!existing) {
 			throw new NotFoundException('Role not found for this tenant.');
 		}
 
 		// await this.roleRepository.update(id, roleMapped);
+		// Map existing permissions to existing entities to avoid duplicate inserts
+		if (roleMapped.permissions) {
+			roleMapped.permissions = roleMapped.permissions.map(p => {
+				const existingPerm = existing.permissions.find(ep => ep.featureTag === p.featureTag);
+				if (existingPerm) {
+					p.id = existingPerm.id;
+					if (p.accessLevel && existingPerm.accessLevel) {
+						p.accessLevel.id = existingPerm.accessLevel.id;
+					}
+				}
+				return p;
+			});
+		}
+		
 		const merged = this.roleRepository.merge(existing, roleMapped, { tenantId });
 		const insertedRole = await this.roleRepository.save(merged);
 		if (insertedRole) {

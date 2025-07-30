@@ -1,7 +1,12 @@
+import { RequiredPermissions } from '@mk/common/decorators/RequiredPermission';
+import { FEATURES } from '@mk/common/enum/feature.enum';
+import { JwtAuthGuard } from '@mk/common/guards/jwt.guard';
+import { RoleGuard } from '@mk/common/guards/role.guard';
+import { TenancyGuard } from '@mk/common/guards/tenancy.guard';
 import { TEntityCrudController } from '@mk/common/utils/shared-crud.controller';
 import { WorkflowDefinition } from '@mk/database/entities/workflow-definition.entity';
 import { WorkflowStepDefinition } from '@mk/database/entities/workflow-step-definition.entity';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateWorkflowDefinitionDto } from '../dto/create-workflow-definition.dto';
 import { RespondWorkflowDefinitionDto, RespondWorkflowStepDefinitionDto } from '../dto/respond-workflow-definition.dto';
@@ -10,6 +15,8 @@ import { WorkflowDefinitionService } from '../services/workflow-definition.servi
 
 @ApiTags('Workflow')
 @Controller('workflow-definition')
+@UseGuards(JwtAuthGuard, TenancyGuard, RoleGuard)
+@RequiredPermissions(FEATURES.WORKFLOW_DEFINITION)
 export class WorkflowDefinitionController extends TEntityCrudController<WorkflowDefinition>({
 	createDto: CreateWorkflowDefinitionDto,
 	updateDto: UpdateWorkflowDefinitionDto,
