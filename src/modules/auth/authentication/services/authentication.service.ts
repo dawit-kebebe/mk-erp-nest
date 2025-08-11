@@ -82,7 +82,7 @@ export class AuthenticationService {
 			await this.cacheManager.set(`role:${payload.roleId}`, role);
 		}
 
-		Logger.log(`[MK-ERP] - User logged in successfully: ${payload} `)
+		Logger.log(`[MK-ERP] - User logged in successfully: ${JSON.stringify(payload)} `)
 
 		return {
 			access_token: this.jwtService.sign(payload),

@@ -146,7 +146,7 @@ export class RoleGuard implements CanActivate {
                     this.accessLevelContext.pushAccessLevelContext({
                         featureTag: currentPermission.featureTag as FEATURES,
                         accessLevelTag: ACCESS_LEVEL.ROOT,
-                        organizationalUnitId: rootOrg.children
+                        organizationalUnitId: [...rootOrg.children, rootOrg]
                     });
                     break;
                 default:
