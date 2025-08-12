@@ -68,8 +68,6 @@ export class UserService extends TEntityCrudService<User> {
 		const user = await this.userRepository.findOne({ where });
 		if (!user) throw new NotFoundException("User not found.");
 
-		Object.assign(user, itemData);
-
 		if (itemData.organizationalUnitId) {
 			const orgUnit = await this.getOrgUnit(itemData.organizationalUnitId, tenantId, isSuperTenant);
 			if (!orgUnit) throw new ForbiddenException(`Organizational unit does not exist.`);
@@ -79,7 +77,12 @@ export class UserService extends TEntityCrudService<User> {
 		if (itemData.password) {
 			user.password = await this.hashPassword(itemData.password);
 		}
+
+		if (user.organizationalUnit)
+			delete (user as any).organizationalUnit;
 		
-		return this.userRepository.save(user);
+		const merged = this.userRepository.merge(user, itemData);
+
+		return this.userRepository.save(merged);;
 	}
 }
