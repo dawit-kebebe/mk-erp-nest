@@ -10,6 +10,7 @@ import { isUUID } from "class-validator";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserContext } from "@mk/common/contexts/user.context";
 
 @Injectable()
 export class UserService extends TEntityCrudService<User> {
@@ -18,6 +19,7 @@ export class UserService extends TEntityCrudService<User> {
 		@InjectRepository(OrganizationalUnit) private readonly organizationalUnit: Repository<OrganizationalUnit>,
 		@Inject() private readonly configService: ConfigService,
 		@Inject() readonly tenantContext: TenantContext,
+		@Inject() readonly userContext: UserContext
 	) {
 		super(userRepository);
 	}
@@ -31,6 +33,23 @@ export class UserService extends TEntityCrudService<User> {
 		const where: any = { id: orgUnitId };
 		if (!isSuperTenant) where.tenantId = tenantId;
 		return this.organizationalUnit.findOne({ where });
+	}
+
+	async getMyProfile():  Promise<User> {
+		if (!this.userContext || typeof this.userContext.userId !== 'string'  || this.userContext.userId === '') {
+			throw new ForbiddenException('User profile context not set.');
+		}
+
+		const user = await this.userRepository.findOne({
+			where: {id: this.userContext.userId},
+			relations: ['organizationalUnit', 'role']
+		})
+
+		if (!user) {
+			throw new NotFoundException('User profile not found.');
+		}
+
+		return user;
 	}
 
 	async create(itemData: CreateUserDto): Promise<User> {

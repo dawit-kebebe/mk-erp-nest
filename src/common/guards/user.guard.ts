@@ -10,12 +10,12 @@ export class UserGuard implements CanActivate {
 
         const request = context.switchToHttp().getRequest();
         const user = request?.user;
-
-        if (!user?.sub) { 
+console.log(user)
+        if (!user?.userId) { 
             throw new ForbiddenException("Could not set user context.")
         }
         
-       this.userContext.userId = user.sub; 
+       this.userContext.userId = user.userId; 
 
         return true; 
     }
