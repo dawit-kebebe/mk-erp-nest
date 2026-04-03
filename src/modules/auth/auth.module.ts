@@ -30,7 +30,7 @@ import { UserService } from './user/services/user.service';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN') },
+        signOptions: { expiresIn: config.get<any>('JWT_EXPIRES_IN') },
       }),
     }),
     TypeOrmModule.forFeature([
